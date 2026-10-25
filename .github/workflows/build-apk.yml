@@ -1,4 +1,4 @@
-name: Build Android APK
+name: Build Production APK
 
 on:
   push:
@@ -24,48 +24,75 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Generate Valid package.json & Install
+      - name: Configurar Entorno (Package y Config a prueba de fallos)
         run: |
-          # Creamos un package.json limpio y válido con todas las dependencias nativas requeridas
           cat << 'EOF' > package.json
           {
             "name": "nuestra-boda",
             "version": "1.0.0",
-            "description": "App de planificacion de bodas",
-            "main": "index.js",
-            "scripts": {
-              "test": "echo \"Error: no test specified\" && exit 1"
-            },
             "dependencies": {
               "@capacitor/core": "^5.0.0",
               "@capacitor/android": "^5.0.0"
             },
             "devDependencies": {
-              "@capacitor/cli": "^5.0.0"
+              "@capacitor/cli": "^5.0.0",
+              "@capacitor/assets": "^3.0.5"
             }
+          }
+          EOF
+          
+          cat << 'EOF' > capacitor.config.json
+          {
+            "appId": "com.nuestraboda.app",
+            "appName": "Nuestra Boda",
+            "webDir": "www",
+            "bundledWebRuntime": false
           }
           EOF
           npm install
 
-      - name: Setup Capacitor Android & Sync
+      - name: Crear Ícono de Boda (Anillos y Diamante Nativos)
+        run: |
+          mkdir -p assets
+          cat << 'EOF' > assets/icon.svg
+          <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+            <rect width="1024" height="1024" fill="#FDF6F0"/>
+            <!-- Anillo Oro -->
+            <circle cx="400" cy="550" r="220" fill="none" stroke="#D4A373" stroke-width="60" />
+            <!-- Anillo Lila -->
+            <circle cx="600" cy="450" r="220" fill="none" stroke="#C5A3C7" stroke-width="60" />
+            <!-- Diamante -->
+            <polygon points="600,160 550,110 650,110" fill="#9FB8D0"/>
+            <polygon points="600,160 550,110 520,160" fill="#E8F0F6"/>
+            <polygon points="600,160 650,110 680,160" fill="#E8F0F6"/>
+            <polygon points="600,230 520,160 600,160" fill="#FFFFFF"/>
+            <polygon points="600,230 680,160 600,160" fill="#F4F7F8"/>
+          </svg>
+          EOF
+          sudo apt-get update && sudo apt-get install -y librsvg2-bin
+          rsvg-convert -w 1024 -h 1024 assets/icon.svg -o assets/icon.png
+          cp assets/icon.png assets/splash.png
+
+      - name: Generar Proyecto Nativo e Incrustar Íconos
         run: |
           rm -rf android
           npx cap add android
+          npx capacitor-assets generate --android
           npx cap sync android
 
-      - name: Build Android APK
+      - name: Compilar APK Final (Release)
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew assembleDebug
+          ./gradlew assembleRelease
 
-      - name: Prepare Artifact
+      - name: Preparar Archivo Limpio (Quitar etiqueta debug)
         run: |
           mkdir -p final-apk
-          cp android/app/build/outputs/apk/debug/app-debug.apk final-apk/NuestraBoda-Final.apk
+          cp android/app/build/outputs/apk/release/app-release-unsigned.apk final-apk/NuestraBoda.apk
 
-      - name: Upload Clean APK Artifact
+      - name: Subir APK
         uses: actions/upload-artifact@v4
         with:
-          name: NuestraBoda-Final-APK
-          path: final-apk/NuestraBoda-Final.apk
+          name: NuestraBoda-App
+          path: final-apk/NuestraBoda.apk
