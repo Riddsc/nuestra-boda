@@ -27,16 +27,24 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Verify www directory
+      - name: Ensure www and index.html exist
         run: |
-          ls -la
-          ls -la www || echo "Falta la carpeta www en la raíz"
+          mkdir -p www
+          # Si por error subiste index.html afuera, lo movemos a www automáticamente
+          if [ -f "index.html" ]; then
+            mv index.html www/index.html
+          fi
+          # Si aún no existe index.html en www, creamos uno básico de emergencia
+          if [ ! -f "www/index.html" ]; then
+            echo "<h1>Nuestra Boda</h1>" > www/index.html
+          fi
+          ls -la www
 
       - name: Initialize Capacitor Android
         run: |
           npx cap add android
 
-      - name: Copy Web Assets and Sync
+      - name: Sync Capacitor
         run: |
           npx cap sync android
 
