@@ -80,16 +80,16 @@ jobs:
           npx capacitor-assets generate --android
           npx cap sync android
 
-      - name: Compilar APK Final (Release)
+      - name: Compilar APK Final (Firma Automática de Sistema)
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew assembleRelease
+          ./gradlew assembleDebug
 
       - name: Preparar Archivo Limpio (Quitar etiqueta debug)
         run: |
           mkdir -p final-apk
-          cp android/app/build/outputs/apk/release/app-release-unsigned.apk final-apk/NuestraBoda.apk
+          cp android/app/build/outputs/apk/debug/app-debug.apk final-apk/NuestraBoda.apk
 
       - name: Subir APK
         uses: actions/upload-artifact@v4
