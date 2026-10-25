@@ -2,1746 +2,281 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nuestra Boda</title>
-    <!-- Librerías por CDN para previsualización y offline offline en APK via npm/CDN estático -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nuestra Boda 💍</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
-    <!-- Fuentes Elegantes -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-    
     <style>
-        /* TEMA 1: ROMÁNTICO PASTEL (Por Defecto - Lilas, Rosas, Salmón) */
-        :root, body.theme-romantico {
-            --bg-app: #FFF7F8;             
-            --theme-primary: #C5A3C7;      
-            --theme-light: #F4EBF5;        
-            --theme-secondary: #FDE2E4;    
-            --theme-accent: #FFB5A7;       
-            --color-text-main: #4A4545;
-            --color-text-muted: #9E9494;
-            --color-bg-card: #FFFFFF;
-            --color-bg-input: #FCF4F4;
-            --color-danger: #F2B8B5;
-            --color-border: #F7EBEB;
+        :root {
+            --primary: #d4a373;
+            --pastel-pink: #fdf6f0;
+            --pastel-lilac: #f3eaf4;
+            --pastel-sage: #eef2ed;
+            --accent-rose: #d8a47f;
+            --text-dark: #4a403b;
+            --white: #ffffff;
+            --shadow: 0 4px 15px rgba(212, 163, 115, 0.15);
         }
-
-        /* TEMA 2: CAMPESTRE (Verdes Salvia y Dorado) */
-        body.theme-campestre {
-            --bg-app: #FDFBF8;
-            --theme-primary: #A9BCA5;
-            --theme-light: #E9EFE8;
-            --theme-secondary: #F2E4E4;
-            --theme-accent: #D6BD7D;
-            --color-text-main: #4A4A4A;
-            --color-text-muted: #8C8C8C;
-            --color-bg-card: #FFFFFF;
-            --color-bg-input: #F8F8F8;
-            --color-danger: #E6A5A5;
-            --color-border: #F0F0F0;
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--pastel-pink);
+            color: var(--text-dark);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
         }
-
-        /* TEMA 3: PLAYA (Azul pastel, Arena, Melocotón) */
-        body.theme-playa {
-            --bg-app: #F4F7F8;
-            --theme-primary: #9FB8D0;
-            --theme-light: #E8F0F6;
-            --theme-secondary: #FDE8D4;
-            --theme-accent: #F4C2A1;
-            --color-text-main: #3D4A54;
-            --color-text-muted: #8B9CA8;
-            --color-bg-card: #FFFFFF;
-            --color-bg-input: #F0F4F6;
-            --color-danger: #F2B8B5;
-            --color-border: #E8EEF2;
+        header {
+            background-color: var(--pastel-lilac);
+            padding: 12px 20px;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--text-dark);
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
-
-        /* MODO OSCURO (Elegante para cualquier tema) */
-        body.dark-mode {
-            --bg-app: #1A1818;
-            --color-bg-card: #242121;
-            --color-bg-input: #2E2929;
-            --color-text-main: #F0EFEB;
-            --color-text-muted: #A39D9D;
-            --color-border: #3A3535;
+        header span.icon { font-size: 1.5rem; }
+        main {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            padding-bottom: 80px;
         }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; -webkit-tap-highlight-color: transparent; }
+        .view { display: none; }
+        .view.active { display: block; }
         
-        body { background-color: var(--bg-app); color: var(--color-text-main); overflow: hidden; height: 100vh; display: flex; flex-direction: column; transition: background-color 0.4s ease, color 0.4s ease; }
-        
-        .font-title { font-family: 'Playfair Display', serif; font-weight: 600; letter-spacing: 0.5px; }
-        
-        /* Layout Principal con Animación */
-        .view-container { 
-            display: flex; flex-direction: column; height: 100%; padding-bottom: 75px; 
-            animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        .card {
+            background: var(--white);
+            padding: 18px;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            margin-bottom: 15px;
+            border: 1px solid rgba(212, 163, 115, 0.2);
         }
+        h2 { color: var(--accent-rose); margin-top: 0; font-size: 1.3rem; }
         
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .hidden { display: none !important; }
-        .scrollable { overflow-y: auto; padding: 25px 20px; flex: 1; scroll-behavior: smooth; }
-
-        /* Componentes - Tarjetas Suaves */
-        .card { 
-            background: var(--color-bg-card); 
-            border-radius: 24px; 
-            padding: 24px; 
-            margin-bottom: 18px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.03); 
+        /* Botones y Inputs */
+        button {
+            background-color: var(--accent-rose);
+            color: white;
             border: none;
-            transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.4s ease;
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 8px;
+            transition: opacity 0.2s;
         }
-        .flex { display: flex; }
-        .justify-between { justify-content: space-between; }
-        .items-center { align-items: center; }
-        .text-center { text-align: center; }
-        .text-muted { color: var(--color-text-muted); font-size: 13px; font-weight: 400; }
-        
-        /* Botones y Formularios Redondeados */
-        button { cursor: pointer; border: none; outline: none; background: none; transition: all 0.2s ease; }
-        button:active { transform: scale(0.95); opacity: 0.8; }
-        
-        .btn-primary { background: var(--theme-primary); color: white; padding: 16px 28px; border-radius: 30px; font-size: 15px; font-weight: 500; width: 100%; letter-spacing: 0.5px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
-        .btn-outline { border: 1.5px solid var(--theme-primary); color: var(--theme-primary); padding: 14px 24px; border-radius: 30px; font-size: 14px; font-weight: 500; width: 100%; }
-        
-        .fab { position: fixed; bottom: 95px; right: 25px; width: 64px; height: 64px; background: var(--theme-accent); border-radius: 50%; color: white; font-size: 28px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); display: flex; align-items: center; justify-content: center; z-index: 100; font-family: sans-serif; transition: background 0.4s ease; }
-        
-        input, select { width: 100%; padding: 16px 20px; border-radius: 16px; border: none; background: var(--color-bg-input); color: var(--color-text-main); font-size: 15px; margin-bottom: 16px; outline: none; transition: background 0.3s, box-shadow 0.3s; }
-        input:focus, select:focus { background: var(--color-bg-card); box-shadow: 0 0 0 2px var(--theme-light); }
+        button:active { opacity: 0.8; }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin: 6px 0 12px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            background: #faf7f5;
+        }
         
         /* Navegación Inferior */
-        .bottom-nav { 
-            position: fixed; bottom: 0; width: 100%; height: 75px; 
-            background: var(--color-bg-card); 
-            display: flex; justify-content: space-around; align-items: center; 
-            box-shadow: 0 -10px 30px rgba(0,0,0,0.04); 
-            z-index: 100; 
-            border-radius: 30px 30px 0 0;
-            transition: background-color 0.4s ease;
+        nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: var(--white);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            border-top: 1px solid #eee;
+            z-index: 1000;
         }
-        .bottom-nav button { flex: 1; display: flex; flex-direction: column; align-items: center; color: var(--color-text-muted); font-size: 11px; padding: 10px 0; font-weight: 500; }
-        .bottom-nav button.active { color: var(--theme-primary); }
-        .bottom-nav svg { width: 22px; height: 22px; margin-bottom: 6px; fill: currentColor; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .bottom-nav button.active svg { transform: translateY(-4px) scale(1.1); }
-
-        /* Wizard */
-        .wizard-step { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px; text-align: center; animation: fadeIn 0.6s ease-out; }
-        .wizard-controls { position: absolute; bottom: 60px; width: calc(100% - 80px); display: flex; justify-content: space-between; gap: 15px;}
-
-        /* Inicio / Dashboard */
-        .hero-countdown { 
-            background: linear-gradient(135deg, var(--theme-secondary) 0%, var(--theme-light) 100%); 
-            border-radius: 30px; padding: 45px 20px; color: var(--color-text-main); 
-            margin-bottom: 25px; position: relative; overflow: hidden; 
-            box-shadow: 0 15px 35px rgba(0,0,0,0.04);
-            transition: background 0.5s ease;
+        nav button {
+            background: none;
+            border: none;
+            color: #8c7a72;
+            font-size: 0.75rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            margin: 0;
+            padding: 0;
+            width: auto;
         }
-        .progress-bar { height: 8px; background: var(--color-bg-input); border-radius: 10px; overflow: hidden; margin-top: 15px; }
-        .progress-fill { height: 100%; background: var(--theme-primary); transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 10px; }
-
-        /* Presupuesto y Tabs */
-        .budget-header { position: sticky; top: 0; background: var(--bg-app); z-index: 10; padding: 25px 20px 10px; transition: background 0.4s ease; }
-        .tabs { display: flex; background: var(--color-bg-card); border-radius: 16px; padding: 5px; margin-bottom: 20px; box-shadow: 0 8px 24px rgba(0,0,0,0.03); }
-        .tab { flex: 1; padding: 14px; text-align: center; font-weight: 500; color: var(--color-text-muted); font-size: 14px; border-radius: 12px; transition: all 0.3s; cursor: pointer;}
-        .tab.active { background: var(--theme-light); color: var(--theme-primary); }
-        
-        .category-item { background: var(--color-bg-card); border-radius: 20px; margin-bottom: 15px; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.02); transition: all 0.3s ease; }
-        .cat-head { padding: 20px; display: flex; justify-content: space-between; align-items: center; font-weight: 500; font-size: 15px; cursor: pointer; }
-        .cat-body { padding: 0 20px; display: none; }
-        .category-item.expanded { box-shadow: 0 12px 30px rgba(0,0,0,0.06); transform: translateY(-2px); }
-        .category-item.expanded .cat-body { display: block; padding-bottom: 15px; animation: fadeIn 0.4s ease; }
-        .expense-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--color-border); }
-        .expense-row:last-child { border-bottom: none; }
-        .status-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 12px; }
-        .status-pendiente { background: var(--color-danger); }
-        .status-abonado { background: var(--theme-accent); }
-        .status-pagado { background: var(--theme-primary); }
-        .badge-apadrinado { font-size: 10px; background: var(--theme-accent); color: white; padding: 4px 10px; border-radius: 12px; margin-left: 10px; font-weight: 600; letter-spacing: 0.3px;}
-        .delete-btn { color: var(--color-danger); font-size: 22px; padding: 5px; margin-left: 12px; line-height: 1; }
-
-        /* Calendario & Agenda */
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; text-align: center; margin-bottom: 25px; }
-        .calendar-day-header { font-weight: 500; font-size: 11px; text-transform: uppercase; color: var(--color-text-muted); padding: 5px; letter-spacing: 0.5px;}
-        .calendar-day { padding: 12px 5px; border-radius: 14px; font-size: 14px; position: relative; background: var(--color-bg-input); transition: background 0.3s; font-weight: 500;}
-        .calendar-day.has-event { font-weight: 600; color: var(--theme-primary); background: var(--theme-light); }
-        .calendar-day.has-event::after { content: ''; position: absolute; bottom: 6px; left: 50%; transform: translateX(-50%); width: 5px; height: 5px; background: var(--theme-primary); border-radius: 50%; }
-        
-        .task-item { display: flex; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--color-border); cursor: pointer; transition: opacity 0.3s; }
-        .task-item:last-child { border-bottom: none; }
-        .task-checkbox { width: 26px; height: 26px; border: 2px solid var(--theme-primary); border-radius: 50%; margin-right: 18px; display: flex; justify-content: center; align-items: center; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); flex-shrink: 0; }
-        .task-item.completed .task-checkbox { background: var(--theme-primary); transform: scale(1.1);}
-        .task-item.completed .task-checkbox::after { content: '✓'; font-size: 14px; color: white; }
-        .task-item.completed span { text-decoration: line-through; color: var(--color-text-muted); }
-
-        /* Invitados y Mesas */
-        .guest-card { display: flex; justify-content: space-between; align-items: center; padding: 18px; background: var(--color-bg-card); border-radius: 20px; margin-bottom: 14px; box-shadow: 0 8px 24px rgba(0,0,0,0.03); transition: transform 0.2s; }
-        .guest-card:active { transform: scale(0.98); }
-        .btn-icon { background: var(--theme-light); color: var(--theme-primary); border-radius: 50%; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; margin-right: 5px; transition: background 0.3s;}
-        
-        .table-dropzone { min-height: 130px; background: var(--color-bg-input); border-radius: 20px; padding: 18px; margin-bottom: 25px; transition: background 0.3s; border: 2px dashed transparent;}
-        .table-dropzone.highlight { background: var(--theme-light); border-color: var(--theme-primary); }
-        .guest-drag-item { background: var(--color-bg-card); padding: 12px 18px; border-radius: 14px; margin-bottom: 12px; font-size: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); cursor: grab; font-weight: 500; }
-        .guest-drag-item:active { cursor: grabbing; box-shadow: 0 8px 25px rgba(0,0,0,0.1); transform: scale(1.02);}
-
-        /* Inspiración (Moodboard) */
-        .masonry-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
-        .masonry-item { border-radius: 20px; overflow: hidden; position: relative; box-shadow: 0 8px 25px rgba(0,0,0,0.08); }
-        .masonry-item img { width: 100%; height: auto; display: block; object-fit: cover; }
-        .masonry-item .delete-img { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.5); color: white; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 14px; backdrop-filter: blur(5px); }
-
-        /* Modales */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 200; display: none; justify-content: center; align-items: flex-end; }
-        .modal-overlay.active { display: flex; animation: fadeInModal 0.4s ease; }
-        .modal-content { background: var(--color-bg-card); width: 100%; max-height: 85vh; overflow-y: auto; border-radius: 35px 35px 0 0; padding: 35px 25px 45px; animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 -15px 40px rgba(0,0,0,0.1); }
-        
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        @keyframes fadeInModal { from { opacity: 0; } to { opacity: 1; } }
-
-        /* Notificación Toast */
-        .toast { position: fixed; top: 30px; left: 50%; transform: translateX(-50%); background: var(--color-text-main); color: var(--color-bg-card); padding: 14px 28px; border-radius: 30px; font-size: 14px; font-weight: 500; z-index: 300; opacity: 0; transition: opacity 0.4s, transform 0.4s; pointer-events: none; box-shadow: 0 10px 25px rgba(0,0,0,0.2); transform: translate(-50%, -20px);}
-        .toast.show { opacity: 1; transform: translate(-50%, 0); }
-
-        /* Confeti */
-        .confetti { position: fixed; width: 10px; height: 20px; z-index: 1000; animation: fall 3s linear forwards; border-radius: 6px; }
-        @keyframes fall { to { transform: translateY(100vh) rotate(720deg); } }
-
-        /* Sub-pantallas del menú Más */
-        .sub-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-app); z-index: 50; animation: slideLeft 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
-        @keyframes slideLeft { from { transform: translateX(30px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-
-        /* Impresión (PDF) */
-        @media print {
-            body { overflow: visible !important; height: auto !important; background: white; color: black; font-family: sans-serif;}
-            .bottom-nav, .fab, .wizard-controls, button, .tabs, .hero-countdown, .modal-overlay, .delete-btn { display: none !important; }
-            .view-container, .scrollable, .sub-screen { display: block !important; overflow: visible !important; position: static !important; padding: 0 !important; animation: none !important; }
-            .hidden { display: block !important; }
-            #wizard-view, #inicio-screen, #mas-screen, #proveedores-screen, #inspiracion-screen, #ajustes-screen { display: none !important; }
-            .card, .category-item, .guest-card { box-shadow: none !important; border: 1px solid #ddd !important; page-break-inside: avoid; margin-bottom: 10px; border-radius: 10px !important;}
-            .cat-body { display: block !important; }
-            .budget-header { position: static !important; border-bottom: 2px solid black; background: white; padding: 0 0 15px; margin-bottom: 20px;}
-        }
+        nav button.active { color: var(--accent-rose); font-weight: bold; }
+        nav span { font-size: 1.3rem; }
     </style>
 </head>
-<body class="theme-romantico">
+<body>
 
-    <!-- ================== WIZARD (Asistente Inicial) ================== -->
-    <div id="wizard-view" class="view-container">
-        <!-- Paso 1 -->
-        <div id="step-1" class="wizard-step">
-            <h1 class="font-title" style="font-size: 36px; margin-bottom: 10px; color: var(--theme-primary);">¡Felicidades!</h1>
-            <p class="text-muted" style="margin: 10px 0 40px; line-height: 1.6;">Comencemos a planear su día inolvidable. ¿Cuáles son sus nombres?</p>
-            <input type="text" id="wiz-name1" placeholder="Nombre 1 (Ej. María)" style="text-align: center; font-size: 18px;">
-            <span class="font-title" style="margin-bottom: 16px; font-size: 28px; color: var(--theme-accent);">&</span>
-            <input type="text" id="wiz-name2" placeholder="Nombre 2 (Ej. Juan)" style="text-align: center; font-size: 18px;">
-            <div class="wizard-controls">
-                <div></div>
-                <button class="btn-primary" style="width: auto;" onclick="Wizard.next(2)">Siguiente</button>
-            </div>
-        </div>
-        <!-- Paso 2 -->
-        <div id="step-2" class="wizard-step hidden">
-            <h2 class="font-title" style="font-size: 30px; margin-bottom: 10px;">¿Dónde y Cuándo?</h2>
-            <p class="text-muted" style="margin: 10px 0 40px; line-height: 1.6;">No te preocupes si aún no tienes la fecha exacta, podremos ajustarla luego.</p>
-            <input type="text" id="wiz-city" placeholder="Ciudad (Ej. Armenia, Colombia)">
-            <input type="date" id="wiz-date" style="color: var(--color-text-muted);">
-            <div class="wizard-controls">
-                <button class="btn-outline" style="width: auto;" onclick="Wizard.next(1)">Atrás</button>
-                <button class="btn-primary" style="width: auto;" onclick="Wizard.next(3)">Siguiente</button>
-            </div>
-        </div>
-        <!-- Paso 3 -->
-        <div id="step-3" class="wizard-step hidden">
-            <h2 class="font-title" style="font-size: 30px; margin-bottom: 10px;">Presupuesto Base</h2>
-            <p class="text-muted" style="margin: 10px 0 40px; line-height: 1.6;">¿Cuánto estiman gastar en total para la boda?</p>
-            <div class="flex" style="gap: 15px; width: 100%;">
-                <select id="wiz-currency" style="width: 35%;">
-                    <option value="COP">COP ($)</option>
-                    <option value="EUR">EUR (€)</option>
-                    <option value="USD">USD ($)</option>
-                </select>
-                <input type="number" id="wiz-budget" placeholder="Ej. 15000000" style="width: 65%;">
-            </div>
-            <div class="wizard-controls">
-                <button class="btn-outline" style="width: auto;" onclick="Wizard.next(2)">Atrás</button>
-                <button class="btn-primary" style="width: auto;" onclick="Wizard.next(4)">Siguiente</button>
-            </div>
-        </div>
-        <!-- Paso 4 -->
-        <div id="step-4" class="wizard-step hidden">
-            <h2 class="font-title" style="font-size: 30px; margin-bottom: 10px;">El Estilo</h2>
-            <p class="text-muted" style="margin: 10px 0 40px; line-height: 1.6;">¿Cómo imaginan su boda y qué colores prefieren para la app?</p>
-            
-            <input type="number" id="wiz-guests" placeholder="Número aprox. de invitados">
-            
-            <!-- Estilo real del evento -->
-            <select id="wiz-wedding-type" style="margin-bottom: 15px;">
-                <option value="" disabled selected>El estilo de su boda será...</option>
-                <option value="Clásica">Boda Clásica / Tradicional</option>
-                <option value="Campestre">Boda Campestre / Rústica</option>
-                <option value="Playa">Boda en la Playa / Destino</option>
-                <option value="Íntima">Boda Íntima / Elopement</option>
-                <option value="Moderna">Boda Moderna / Minimalista</option>
-            </select>
+    <header>
+        <span class="icon">👰‍♀️🤵‍♂️💍</span>
+        <span id="header-title">Nuestra Boda</span>
+    </header>
 
-            <!-- Paleta de colores de la interfaz -->
-            <select id="wiz-style">
-                <option value="" disabled selected>Color para la aplicación...</option>
-                <option value="theme-romantico">App: Romántico (Rosas y Lilas)</option>
-                <option value="theme-campestre">App: Naturaleza (Verdes y Dorado)</option>
-                <option value="theme-playa">App: Brisa (Azules y Arena)</option>
-            </select>
-            
-            <div class="wizard-controls">
-                <button class="btn-outline" style="width: auto;" onclick="Wizard.next(3)">Atrás</button>
-                <button class="btn-primary" style="width: auto;" onclick="Wizard.finish()">¡Comenzar!</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ================== APP PRINCIPAL ================== -->
-    
-    <!-- 1. INICIO -->
-    <div id="inicio-view" class="view-container hidden">
-        <div class="scrollable">
-            <div class="hero-countdown text-center">
-                <button onclick="Settings.openEditConfigModal()" style="position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.6); border-radius: 50%; width: 36px; height: 36px; font-size: 16px; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px);" title="Modificar datos">✏️</button>
-                <h2 class="font-title" id="dash-names" style="font-size: 36px; margin-bottom: 8px;">M & J</h2>
-                <p id="dash-date" style="font-size: 14px; font-weight: 500; opacity: 0.9; margin-bottom: 30px; text-transform: capitalize;">15 de Octubre, 2026</p>
-                <div style="background: rgba(255,255,255,0.45); padding: 20px; border-radius: 20px; backdrop-filter: blur(8px);">
-                    <span style="font-size: 12px; text-transform: uppercase; letter-spacing: 3px; font-weight: 600;">Faltan</span>
-                    <h3 class="font-title" id="dash-countdown" style="font-size: 32px; margin-top: 8px; color: var(--theme-primary);">0 Días</h3>
-                </div>
+    <main>
+        <!-- VISTA INICIO -->
+        <div id="view-inicio" class="view active">
+            <div class="card" style="text-align: center;">
+                <h2>¡Bienvenidos, <span id="lbl-novios">Pareja</span>! 🥂</h2>
+                <p id="lbl-fecha" style="color: #666; margin-bottom: 15px;">Faltan días para el gran día</p>
+                <button onclick="abrirEditarBoda()" style="background-color: #9b786f;">⚙️ Modificar Nombres, Fecha y Presupuesto</button>
             </div>
 
             <div class="card">
-                <div class="flex justify-between items-center" style="margin-bottom: 15px;">
-                    <span class="font-title" style="font-size: 20px;">Presupuesto</span>
-                    <span id="dash-budget-pct" class="text-muted" style="font-weight: 600;">0%</span>
-                </div>
-                <div class="progress-bar"><div class="progress-fill" id="dash-budget-bar" style="width: 0%;"></div></div>
-            </div>
-
-            <div class="card flex justify-between items-center" onclick="App.navigate('agenda')" style="cursor:pointer;">
-                <div>
-                    <span class="font-title" style="font-size: 20px; display: block; margin-bottom: 6px;">Tareas Listas</span>
-                    <span id="dash-tasks-count" class="text-muted">0 / 0 completadas</span>
-                </div>
-                <div style="background: var(--theme-light); color: var(--theme-primary); padding: 14px; border-radius: 50%; font-weight: bold; font-size: 18px;">✓</div>
-            </div>
-
-            <div class="card text-center" style="background: var(--theme-secondary); color: var(--color-text-main); margin-top: 30px;">
-                <p style="font-style: italic; font-size: 16px; line-height: 1.8; font-family: 'Playfair Display', serif;">"El amor se compone de una sola alma que habita en dos cuerpos."</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- 2. PRESUPUESTO -->
-    <div id="presupuesto-view" class="view-container hidden">
-        <div class="budget-header">
-            <div class="flex justify-between" style="margin-bottom: 12px;">
-                <span class="text-muted">Total Boda: <span id="budget-total-boda" style="font-weight:600; color:var(--color-text-main);"></span></span>
-                <span class="text-muted">Apadrinado: <span id="budget-total-apadrinado" style="font-weight:600; color:var(--theme-accent);"></span></span>
-            </div>
-            <div class="flex justify-between items-end">
-                <div>
-                    <h2 class="font-title" style="font-size: 22px; margin-bottom: 8px;">Tu Pago Real</h2>
-                    <p id="budget-total-real" style="font-size: 32px; font-weight: 600; color: var(--theme-primary);"></p>
-                </div>
-                <div class="text-right">
-                    <p id="budget-status-label" style="font-size: 12px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;"></p>
-                    <p id="budget-status-amount" style="font-size: 18px; font-weight: 600;"></p>
-                </div>
-            </div>
-        </div>
-        
-        <div class="scrollable" style="padding-top: 5px;">
-            <div class="tabs">
-                <div class="tab active" onclick="Budget.switchTab('lista', this)">Detalles</div>
-                <div class="tab" onclick="Budget.switchTab('graficos', this)">Gráficos</div>
-            </div>
-
-            <div id="budget-lista">
-                <div id="categories-container"></div>
-                <button class="fab" onclick="Budget.openModal()">+</button>
-            </div>
-
-            <div id="budget-graficos" class="hidden">
-                <div class="card">
-                    <h3 class="text-center font-title" style="margin-bottom: 30px; font-size: 22px;">Distribución</h3>
-                    <canvas id="budgetChart"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 3. AGENDA Y TAREAS -->
-    <div id="agenda-view" class="view-container hidden">
-        <div class="scrollable" style="padding-bottom: 0;">
-            <div class="tabs">
-                <div class="tab active" onclick="Agenda.switchTab('calendario', this)">Calendario</div>
-                <div class="tab" onclick="Agenda.switchTab('tareas', this)">Checklist</div>
+                <h2>Resumen Rápido</h2>
+                <p>Presupuesto Total: <strong id="lbl-presupuesto">$0</strong></p>
+                <p>Invitados Confirmados: <strong id="lbl-invitados">0</strong></p>
             </div>
         </div>
 
-        <div id="agenda-calendario" class="scrollable" style="padding-top: 0;">
+        <!-- VISTA AGENDA / TAREAS -->
+        <div id="view-agenda" class="view">
             <div class="card">
-                <div class="flex justify-between items-center" style="margin-bottom: 25px;">
-                    <button onclick="Agenda.changeMonth(-1)" style="font-size: 22px; color: var(--color-text-muted);">❮</button>
-                    <h3 class="font-title" id="calendar-month-year" style="font-size: 20px; text-transform: capitalize; color: var(--theme-primary);">Mes Año</h3>
-                    <button onclick="Agenda.changeMonth(1)" style="font-size: 22px; color: var(--color-text-muted);">❯</button>
-                </div>
-                <div class="calendar-grid" id="calendar-grid"></div>
+                <h2>Checklist de Tareas</h2>
+                <div id="lista-tareas"></div>
+                <input type="text" id="nueva-tarea" placeholder="Añadir nueva tarea...">
+                <button onclick="agregarTarea()">Añadir Tarea</button>
             </div>
-            <h4 class="font-title" style="margin-bottom: 20px; font-size: 20px;">Próximos Eventos</h4>
-            <div id="events-list"></div>
-            <button class="fab" onclick="Agenda.openModal()">+</button>
         </div>
 
-        <div id="agenda-tareas" class="scrollable hidden" style="padding-top: 0;">
-            <div class="card" style="margin-bottom: 30px; background: var(--theme-secondary);">
-                <div class="flex justify-between items-center" style="margin-bottom: 12px;">
-                    <span class="font-title" style="font-size: 20px;">Progreso General</span>
-                    <span id="tasks-pct" class="text-muted" style="font-weight: 600; color: var(--theme-primary);">0%</span>
-                </div>
-                <div class="progress-bar" style="background: rgba(255,255,255,0.6);"><div class="progress-fill" id="tasks-bar" style="width: 0%;"></div></div>
-            </div>
+        <!-- VISTA PRESUPUESTO -->
+        <div id="view-presupuesto" class="view">
             <div class="card">
-                <div id="tasks-list"></div>
-            </div>
-            <button class="fab" onclick="Agenda.openTaskModal()">+</button>
-        </div>
-    </div>
-
-    <!-- 4. INVITADOS Y MESAS -->
-    <div id="invitados-view" class="view-container hidden">
-        <div class="scrollable" style="padding-bottom: 0;">
-            <div class="tabs">
-                <div class="tab active" onclick="Guests.switchTab('lista', this)">Lista</div>
-                <div class="tab" onclick="Guests.switchTab('mesas', this)">Plan de Mesas</div>
+                <h2>Gestor de Gastos</h2>
+                <input type="text" id="gasto-nombre" placeholder="Concepto (ej. Salón, Vestido)">
+                <input type="number" id="gasto-monto" placeholder="Monto">
+                <button onclick="agregarGasto()">Registrar Gasto</button>
+                <div id="lista-gastos" style="margin-top: 15px;"></div>
             </div>
         </div>
 
-        <div id="guests-lista" class="scrollable" style="padding-top: 0;">
-            <div class="flex justify-between" style="margin-bottom: 25px; background:var(--color-bg-card); padding:25px; border-radius:24px; box-shadow: 0 10px 30px rgba(0,0,0,0.03);">
-                <div class="text-center"><div id="guest-count-total" style="font-weight:600; font-size:28px;">0</div><div class="text-muted" style="margin-top:8px;">Total</div></div>
-                <div class="text-center"><div id="guest-count-conf" style="font-weight:600; font-size:28px; color:var(--theme-primary);">0</div><div class="text-muted" style="margin-top:8px;">Confirmados</div></div>
-                <div class="text-center"><div id="guest-count-pend" style="font-weight:600; font-size:28px; color:var(--theme-accent);">0</div><div class="text-muted" style="margin-top:8px;">Pendientes</div></div>
-            </div>
-            <div id="guests-container"></div>
-            <button class="fab" onclick="Guests.openModal()">+</button>
-        </div>
-
-        <div id="guests-mesas" class="scrollable hidden" style="padding-top: 0;">
-            <button class="btn-outline" style="margin-bottom: 25px;" onclick="Guests.openTableModal()">+ Añadir Mesa</button>
-            <div class="card" style="background: var(--theme-secondary);">
-                <h4 class="font-title" style="margin-bottom: 18px; font-size: 18px;">Sin asignar (<span id="unassigned-count">0</span>)</h4>
-                <div id="guests-unassigned" class="table-dropzone" data-table-id="none"></div>
-            </div>
-            <div id="tables-container"></div>
-        </div>
-    </div>
-
-    <!-- 5. MÁS (HUB) -->
-    <div id="mas-view" class="view-container hidden">
-        <div class="scrollable" id="mas-screen">
-            <h2 class="font-title" style="margin-bottom: 30px; font-size: 32px; color: var(--theme-primary);">Explorar</h2>
-            
-            <div class="card flex items-center justify-between" style="padding: 24px; cursor: pointer; margin-bottom: 18px;" onclick="MoreMenu.open('proveedores')">
-                <div class="flex items-center" style="gap:20px;">
-                    <div style="background:var(--theme-light); padding:16px; border-radius:18px; font-size: 24px;">📋</div>
-                    <span class="font-title" style="font-size: 20px;">Proveedores</span>
-                </div>
-                <span class="text-muted" style="font-size: 20px;">❯</span>
-            </div>
-
-            <div class="card flex items-center justify-between" style="padding: 24px; cursor: pointer; margin-bottom: 18px;" onclick="MoreMenu.open('inspiracion')">
-                <div class="flex items-center" style="gap:20px;">
-                    <div style="background:var(--theme-secondary); padding:16px; border-radius:18px; font-size: 24px;">✨</div>
-                    <span class="font-title" style="font-size: 20px;">Inspiración</span>
-                </div>
-                <span class="text-muted" style="font-size: 20px;">❯</span>
-            </div>
-
-            <div class="card flex items-center justify-between" style="padding: 24px; cursor: pointer; margin-bottom: 18px;" onclick="MoreMenu.open('grandia')">
-                <div class="flex items-center" style="gap:20px;">
-                    <div style="background:var(--theme-accent); color:white; padding:16px; border-radius:18px; font-size: 24px;">⏱️</div>
-                    <span class="font-title" style="font-size: 20px;">El Gran Día</span>
-                </div>
-                <span class="text-muted" style="font-size: 20px;">❯</span>
-            </div>
-
-            <div class="card flex items-center justify-between" style="padding: 24px; cursor: pointer; margin-bottom: 18px;" onclick="MoreMenu.open('ajustes')">
-                <div class="flex items-center" style="gap:20px;">
-                    <div style="background:var(--color-bg-input); padding:16px; border-radius:18px; font-size: 24px;">⚙️</div>
-                    <span class="font-title" style="font-size: 20px;">Ajustes</span>
-                </div>
-                <span class="text-muted" style="font-size: 20px;">❯</span>
-            </div>
-        </div>
-
-        <!-- Subpantallas -->
-        <div id="proveedores-screen" class="scrollable hidden sub-screen">
-            <div class="flex items-center" style="margin-bottom: 30px;">
-                <button onclick="MoreMenu.back()" style="margin-right: 15px; font-size: 26px; color: var(--theme-primary);">❮</button>
-                <h2 class="font-title" style="font-size: 28px;">Proveedores</h2>
-            </div>
-            <div id="vendors-list"></div>
-            <button class="fab" onclick="Vendors.openModal()">+</button>
-        </div>
-
-        <div id="inspiracion-screen" class="scrollable hidden sub-screen">
-            <div class="flex items-center" style="margin-bottom: 30px;">
-                <button onclick="MoreMenu.back()" style="margin-right: 15px; font-size: 26px; color: var(--theme-primary);">❮</button>
-                <h2 class="font-title" style="font-size: 28px;">Inspiración</h2>
-            </div>
-            <input type="file" id="mood-upload" accept="image/*" class="hidden" onchange="Inspiration.upload(event)">
-            <div id="mood-grid" class="masonry-grid"></div>
-            <button class="fab" onclick="document.getElementById('mood-upload').click()">+</button>
-        </div>
-
-        <div id="grandia-screen" class="scrollable hidden sub-screen">
-            <div class="flex items-center" style="margin-bottom: 30px;">
-                <button onclick="MoreMenu.back()" style="margin-right: 15px; font-size: 26px; color: var(--theme-primary);">❮</button>
-                <h2 class="font-title" style="font-size: 28px;">Minuto a Minuto</h2>
-            </div>
-            <div id="timeline-list" style="border-left: 2px solid var(--theme-light); padding-left: 25px; margin-left: 10px;"></div>
-            <button class="fab" onclick="Timeline.openModal()">+</button>
-        </div>
-
-        <div id="ajustes-screen" class="scrollable hidden sub-screen">
-            <div class="flex items-center" style="margin-bottom: 30px;">
-                <button onclick="MoreMenu.back()" style="margin-right: 15px; font-size: 26px; color: var(--theme-primary);">❮</button>
-                <h2 class="font-title" style="font-size: 28px;">Ajustes</h2>
-            </div>
-            
+        <!-- VISTA AJUSTES / EDITAR RÁPIDO -->
+        <div id="view-ajustes" class="view">
             <div class="card">
-                <h3 class="font-title" style="margin-bottom: 25px; font-size: 20px; color: var(--theme-primary);">Datos Generales de la Boda</h3>
-                <button class="btn-outline" style="margin-bottom: 10px; background: var(--bg-app);" onclick="Settings.openEditConfigModal()">✏️ Modificar Nombres, Fecha y Presupuesto</button>
-            </div>
-
-            <div class="card">
-                <h3 class="font-title" style="margin-bottom: 25px; font-size: 20px; color: var(--theme-primary);">Apariencia</h3>
+                <h2>Configuración de la Boda</h2>
+                <label>Nombres de los Novios:</label>
+                <input type="text" id="edit-nombres" value="Ana & Carlos">
                 
-                <div class="flex justify-between items-center" style="padding: 10px 0; margin-bottom: 15px;">
-                    <span style="font-weight: 500;">Modo Oscuro</span>
-                    <input type="checkbox" id="toggle-dark" onchange="Settings.toggleDark()" style="width: auto; margin:0; transform: scale(1.4); accent-color: var(--theme-primary);">
-                </div>
+                <label>Fecha del Gran Día:</label>
+                <input type="date" id="edit-fecha" value="2027-12-31">
                 
-                <div class="flex justify-between items-center" style="padding: 10px 0;">
-                    <span style="font-weight: 500;">Diseño (Tema)</span>
-                    <select id="theme-selector" onchange="Settings.changeTheme(this.value)" style="width: 55%; margin-bottom: 0; padding: 10px 15px;">
-                        <option value="theme-romantico">Romántico (Rosas)</option>
-                        <option value="theme-campestre">Campestre (Verdes)</option>
-                        <option value="theme-playa">Playa (Azules)</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="card">
-                <h3 class="font-title" style="margin-bottom: 25px; font-size: 20px; color: var(--theme-primary);">Datos y Seguridad</h3>
-                <button class="btn-outline" style="margin-bottom: 18px; background: var(--bg-app);" onclick="Settings.printPDF()">🖨️ Generar PDF (Resúmenes)</button>
-                <button class="btn-outline" style="margin-bottom: 30px; background: var(--bg-app);" onclick="Settings.exportJSON()">💾 Descargar Copia de Seguridad</button>
+                <label>Presupuesto Total ($):</label>
+                <input type="number" id="edit-presupuesto" value="10000">
                 
-                <p style="font-size: 13px; color: var(--color-text-muted); margin-bottom: 10px; font-weight: 500;">Restaurar desde archivo (.json):</p>
-                <input type="file" id="import-json" accept=".json" onchange="Settings.importJSON(event)" style="font-size: 13px; padding: 12px; background: var(--color-bg-input); margin-bottom: 35px;">
-                
-                <button class="btn-outline" style="border-color: var(--color-danger); color: var(--color-danger); background: var(--theme-secondary);" onclick="Store.clearAll()">Borrar toda la App</button>
+                <button onclick="guardarCambiosBoda()">Guardar Cambios</button>
             </div>
         </div>
-    </div>
+    </main>
 
-    <!-- Navegación Inferior -->
-    <nav class="bottom-nav">
-        <button onclick="App.navigate('inicio')" class="active">
-            <svg viewBox="0 0 24 24"><path d="M12 3L4 9v12h16V9l-8-6zm6 16h-3v-6H9v6H6v-9l6-4.5 6 4.5v9z"/></svg>
-            Inicio
-        </button>
-        <button onclick="App.navigate('presupuesto')">
-            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
-            Gastos
-        </button>
-        <button onclick="App.navigate('agenda')">
-            <svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/></svg>
-            Agenda
-        </button>
-        <button onclick="App.navigate('invitados')">
-            <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
-            Invitados
-        </button>
-        <button onclick="App.navigate('mas')">
-            <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
-            Más
-        </button>
+    <nav>
+        <button onclick="cambiarVista('inicio', this)" class="active"><span>🏠</span>Inicio</button>
+        <button onclick="cambiarVista('agenda', this)"><span>📋</span>Agenda</button>
+        <button onclick="cambiarVista('presupuesto', this)"><span>💰</span>Presupuesto</button>
+        <button onclick="cambiarVista('ajustes', this)"><span>⚙️</span>Ajustes</button>
     </nav>
 
-    <!-- ================== MODALES ================== -->
-    <!-- Modal Gasto -->
-    <div id="modal-gasto" class="modal-overlay">
-        <div class="modal-content">
-            <h3 id="gasto-modal-title" class="font-title" style="margin-bottom: 25px; font-size: 24px; color: var(--theme-primary);">Añadir Gasto</h3>
-            <input type="hidden" id="gasto-edit-id">
-            <select id="gasto-cat">
-                <option value="Lugar">Lugar</option>
-                <option value="Comida">Comida y Bebida</option>
-                <option value="FotoVideo">Fotografía y Video</option>
-                <option value="Musica">Música</option>
-                <option value="VestidoTraje">Vestido y Traje</option>
-                <option value="Decoracion">Decoración y Flores</option>
-                <option value="Otros">Otros</option>
-            </select>
-            <input type="text" id="gasto-prov" placeholder="Proveedor / Detalle">
-            <input type="number" id="gasto-est" placeholder="Costo Estimado">
-            <input type="number" id="gasto-real" placeholder="Costo Real (Opcional)">
-            <input type="number" id="gasto-pagado" placeholder="Ya pagado (Opcional)">
-            
-            <div class="flex justify-between items-center" style="margin-bottom: 20px;">
-                <label style="font-size: 14px; color: var(--color-text-muted); font-weight: 500;">Límite de pago</label>
-                <input type="date" id="gasto-fecha" style="width: 60%; margin-bottom: 0;">
-            </div>
-            
-            <div class="flex items-center" style="margin-bottom: 30px; background: var(--theme-secondary); padding: 18px; border-radius: 16px;">
-                <input type="checkbox" id="gasto-apadrinado" style="width: 24px; margin-bottom: 0; margin-right: 15px; accent-color: var(--theme-accent);">
-                <label for="gasto-apadrinado" style="font-size: 15px; font-weight: 600; color: var(--color-text-main);">Gasto Apadrinado 🎁</label>
-            </div>
-            
-            <div class="flex" style="gap: 15px;">
-                <button class="btn-outline" onclick="Budget.closeModal()">Cancelar</button>
-                <button class="btn-primary" onclick="Budget.save()">Guardar</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Evento Agenda -->
-    <div id="modal-evento" class="modal-overlay">
-        <div class="modal-content">
-            <h3 class="font-title" style="margin-bottom: 25px; font-size: 24px; color: var(--theme-primary);">Añadir Evento</h3>
-            <input type="text" id="ev-titulo" placeholder="Ej. Prueba de vestido">
-            <input type="date" id="ev-fecha">
-            <input type="time" id="ev-hora">
-            <div class="flex" style="gap: 15px; margin-top: 15px;">
-                <button class="btn-outline" onclick="Agenda.closeModal()">Cancelar</button>
-                <button class="btn-primary" onclick="Agenda.save()">Guardar</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Tarea -->
-    <div id="modal-tarea" class="modal-overlay">
-        <div class="modal-content">
-            <h3 id="task-modal-title" class="font-title" style="margin-bottom: 25px; font-size: 24px; color: var(--theme-primary);">Añadir Tarea</h3>
-            <input type="hidden" id="task-edit-id">
-            <input type="text" id="task-desc" placeholder="Descripción de la tarea">
-            <div class="flex" style="gap: 15px; margin-top: 15px;">
-                <button class="btn-outline" onclick="Agenda.closeTaskModal()">Cancelar</button>
-                <button class="btn-primary" onclick="Agenda.saveTask()">Guardar</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Editar Configuración de la Boda -->
-    <div id="modal-edit-config" class="modal-overlay">
-        <div class="modal-content">
-            <h3 class="font-title" style="margin-bottom: 25px; font-size: 24px; color: var(--theme-primary);">Modificar Datos de la Boda</h3>
-            <input type="text" id="cfg-name1" placeholder="Nombre 1">
-            <input type="text" id="cfg-name2" placeholder="Nombre 2">
-            <input type="text" id="cfg-city" placeholder="Ciudad">
-            <input type="date" id="cfg-date" style="color: var(--color-text-muted);">
-            <div class="flex" style="gap: 15px;">
-                <select id="cfg-currency" style="width: 35%;">
-                    <option value="COP">COP ($)</option>
-                    <option value="EUR">EUR (€)</option>
-                    <option value="USD">USD ($)</option>
-                </select>
-                <input type="number" id="cfg-budget" placeholder="Presupuesto Total" style="width: 65%;">
-            </div>
-            <select id="cfg-wedding-type" style="margin-top: 10px;">
-                <option value="Clásica">Boda Clásica / Tradicional</option>
-                <option value="Campestre">Boda Campestre / Rústica</option>
-                <option value="Playa">Boda en la Playa / Destino</option>
-                <option value="Íntima">Boda Íntima / Elopement</option>
-                <option value="Moderna">Boda Moderna / Minimalista</option>
-            </select>
-            <div class="flex" style="gap: 15px; margin-top: 15px;">
-                <button class="btn-outline" onclick="Settings.closeEditConfigModal()">Cancelar</button>
-                <button class="btn-primary" onclick="Settings.saveEditConfig()">Actualizar</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Invitado -->
-    <div id="modal-guest" class="modal-overlay">
-        <div class="modal-content">
-            <h3 class="font-title" style="margin-bottom: 25px; font-size: 24px; color: var(--theme-primary);">Añadir Invitado</h3>
-            <input type="text" id="guest-name" placeholder="Nombre completo">
-            <select id="guest-group">
-                <option value="Familia Novia">Familia Novia</option>
-                <option value="Familia Novio">Familia Novio</option>
-                <option value="Amigos">Amigos</option>
-                <option value="Trabajo">Trabajo</option>
-            </select>
-            <div class="flex items-center" style="margin-bottom: 20px; background: var(--color-bg-input); padding: 18px; border-radius: 16px;">
-                <input type="checkbox" id="guest-child" style="width: 24px; margin-bottom: 0; margin-right: 15px; accent-color: var(--theme-primary);">
-                <label for="guest-child" style="font-size: 15px; font-weight: 500;">Es niño (Menú infantil)</label>
-            </div>
-            <select id="guest-status">
-                <option value="Pendiente">Estado: Pendiente</option>
-                <option value="Confirmado">Estado: Confirmado</option>
-                <option value="No asiste">Estado: No asiste</option>
-            </select>
-            <input type="tel" id="guest-phone" placeholder="Teléfono WhatsApp (Opcional)">
-            <div class="flex" style="gap: 15px; margin-top: 10px;">
-                <button class="btn-outline" onclick="Guests.closeModal()">Cancelar</button>
-                <button class="btn-primary" onclick="Guests.save()">Guardar</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Mesa -->
-    <div id="modal-table" class="modal-overlay">
-        <div class="modal-content">
-            <h3 class="font-title" style="margin-bottom: 25px; font-size: 24px; color: var(--theme-primary);">Crear Mesa</h3>
-            <input type="text" id="table-name" placeholder="Nombre/Número (Ej. Mesa 1)">
-            <input type="number" id="table-cap" placeholder="Capacidad (Ej. 8)">
-            <div class="flex" style="gap: 15px; margin-top: 15px;">
-                <button class="btn-outline" onclick="Guests.closeTableModal()">Cancelar</button>
-                <button class="btn-primary" onclick="Guests.saveTable()">Guardar</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Proveedor -->
-    <div id="modal-vendor" class="modal-overlay">
-        <div class="modal-content">
-            <h3 class="font-title" style="margin-bottom: 25px; font-size: 24px; color: var(--theme-primary);">Añadir Proveedor</h3>
-            <input type="text" id="vendor-name" placeholder="Nombre / Empresa">
-            <input type="text" id="vendor-cat" placeholder="Categoría (Ej. Fotografía)">
-            <input type="tel" id="vendor-phone" placeholder="Teléfono / WhatsApp">
-            <div class="flex" style="gap: 15px; margin-top: 15px;">
-                <button class="btn-outline" onclick="Vendors.closeModal()">Cancelar</button>
-                <button class="btn-primary" onclick="Vendors.save()">Guardar</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Gran Día -->
-    <div id="modal-timeline" class="modal-overlay">
-        <div class="modal-content">
-            <h3 class="font-title" style="margin-bottom: 25px; font-size: 24px; color: var(--theme-primary);">Añadir Actividad</h3>
-            <input type="time" id="tl-time">
-            <input type="text" id="tl-act" placeholder="Actividad (Ej. Ceremonia)">
-            <input type="text" id="tl-encargado" placeholder="Encargado (Opcional)">
-            <div class="flex" style="gap: 15px; margin-top: 15px;">
-                <button class="btn-outline" onclick="Timeline.closeModal()">Cancelar</button>
-                <button class="btn-primary" onclick="Timeline.save()">Guardar</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Toast Notification -->
-    <div id="toast" class="toast">Mensaje</div>
-
-    <!-- ================== SCRIPTS (LÓGICA) ================== -->
     <script>
-        // Store
-        const Store = {
-            get(key) { return JSON.parse(localStorage.getItem('nb_' + key)) || null; },
-            set(key, value) { localStorage.setItem('nb_' + key, JSON.stringify(value)); },
-            init() {
-                if(!this.get('budget')) this.set('budget', []);
-                if(!this.get('events')) this.set('events', []);
-                if(!this.get('tasks')) this.initTasks();
-                if(!this.get('guests')) this.set('guests', []);
-                if(!this.get('tables')) this.set('tables', []);
-                if(!this.get('vendors')) this.set('vendors', []);
-                if(!this.get('timeline')) this.set('timeline', []);
-            },
-            initTasks() {
-                const defaultTasks = [
-                    { id: 1, desc: 'Definir presupuesto base', done: false },
-                    { id: 2, desc: 'Lista preliminar de invitados', done: false },
-                    { id: 3, desc: 'Reservar lugar (Ceremonia y Recepción)', done: false },
-                    { id: 4, desc: 'Contratar Fotógrafo/Video', done: false },
-                    { id: 5, desc: 'Elegir vestido/traje', done: false },
-                    { id: 6, desc: 'Enviar invitaciones', done: false }
-                ];
-                this.set('tasks', defaultTasks);
-            },
-            clearAll() {
-                if(confirm("¿Seguro que quieres borrar TODOS los datos de la app? Esto no se puede deshacer.")){
-                    localStorage.clear();
-                    indexedDB.deleteDatabase("NB_DB");
-                    window.location.reload();
-                }
+        let datosBoda = JSON.parse(localStorage.getItem('nuestra_boda_data')) || {
+            nombres: "Ana & Carlos",
+            fecha: "2027-12-31",
+            presupuesto: 10000,
+            tareas: ["Reservar el lugar", "Comprar el vestido", "Prueba de menú"],
+            gastos: []
+        };
+
+        function guardar() {
+            localStorage.setItem('nuestra_boda_data', JSON.stringify(datosBoda));
+            actualizarUI();
+        }
+
+        function actualizarUI() {
+            document.getElementById('lbl-novios').innerText = datosBoda.nombres;
+            document.getElementById('header-title').innerText = "Boda de " + datosBoda.nombres;
+            document.getElementById('lbl-fecha').innerText = "Fecha: " + datosBoda.fecha;
+            document.getElementById('lbl-presupuesto').innerText = "$" + Number(datosBoda.presupuesto).toLocaleString();
+            
+            // Cargar Ajustes en inputs
+            document.getElementById('edit-nombres').value = datosBoda.nombres;
+            document.getElementById('edit-fecha').value = datosBoda.fecha;
+            document.getElementById('edit-presupuesto').value = datosBoda.presupuesto;
+
+            // Render Tareas
+            let htmlT = "";
+            datosBoda.tareas.forEach((t, i) => {
+                htmlT += `<div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #eee;"><span>${t}</span> <button onclick="borrarTarea(${i})" style="width:auto; padding:2px 8px; background:#e57373;">X</button></div>`;
+            });
+            document.getElementById('lista-tareas').innerHTML = htmlT || "<p>No hay tareas pendientes.</p>";
+
+            // Render Gastos
+            let htmlG = "";
+            let totalGastado = 0;
+            datosBoda.gastos.forEach((g, i) => {
+                totalGastado += Number(g.monto);
+                htmlG += `<div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #eee;"><span>${g.nombre} ($${g.monto})</span> <button onclick="borrarGasto(${i})" style="width:auto; padding:2px 8px; background:#e57373;">X</button></div>`;
+            });
+            document.getElementById('lista-gastos').innerHTML = htmlG || "<p>Aún no hay gastos registrados.</p>";
+        }
+
+        function cambiarVista(vista, btn) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById('view-' + vista).classList.add('active');
+            document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+            if(btn) btn.classList.add('active');
+        }
+
+        function abrirEditarBoda() {
+            cambiarVista('ajustes', document.querySelectorAll('nav button')[3]);
+        }
+
+        function guardarCambiosBoda() {
+            datosBoda.nombres = document.getElementById('edit-nombres').value;
+            datosBoda.fecha = document.getElementById('edit-fecha').value;
+            datosBoda.presupuesto = document.getElementById('edit-presupuesto').value;
+            guardar();
+            alert("¡Cambios guardados con éxito!");
+            cambiarVista('inicio', document.querySelectorAll('nav button')[0]);
+        }
+
+        function agregarTarea() {
+            let val = document.getElementById('nueva-tarea').value;
+            if(val) {
+                datosBoda.tareas.push(val);
+                document.getElementById('nueva-tarea').value = "";
+                guardar();
             }
-        };
+        }
 
-        // ImageStore (IndexedDB)
-        const ImageStore = {
-            DB_NAME: 'NB_DB', STORE_NAME: 'images',
-            initDB() {
-                return new Promise((resolve, reject) => {
-                    const request = indexedDB.open(this.DB_NAME, 1);
-                    request.onupgradeneeded = e => { e.target.result.createObjectStore(this.STORE_NAME); };
-                    request.onsuccess = e => resolve(e.target.result);
-                    request.onerror = e => reject(e);
-                });
-            },
-            async save(id, dataUrl) {
-                const db = await this.initDB();
-                const tx = db.transaction(this.STORE_NAME, 'readwrite');
-                tx.objectStore(this.STORE_NAME).put(dataUrl, id);
-                return tx.complete;
-            },
-            async getAll() {
-                const db = await this.initDB();
-                return new Promise((resolve) => {
-                    const tx = db.transaction(this.STORE_NAME, 'readonly');
-                    const request = tx.objectStore(this.STORE_NAME).getAll();
-                    const keysRequest = tx.objectStore(this.STORE_NAME).getAllKeys();
-                    tx.oncomplete = () => {
-                        let res = [];
-                        for(let i=0; i<request.result.length; i++) res.push({ id: keysRequest.result[i], dataUrl: request.result[i] });
-                        resolve(res);
-                    };
-                });
-            },
-            async delete(id) {
-                const db = await this.initDB();
-                const tx = db.transaction(this.STORE_NAME, 'readwrite');
-                tx.objectStore(this.STORE_NAME).delete(id);
-                return tx.complete;
+        function borrarTarea(i) {
+            datosBoda.tareas.splice(i, 1);
+            guardar();
+        }
+
+        function agregarGasto() {
+            let nombre = document.getElementById('gasto-nombre').value;
+            let monto = document.getElementById('gasto-monto').value;
+            if(nombre && monto) {
+                datosBoda.gastos.push({nombre, monto});
+                document.getElementById('gasto-nombre').value = "";
+                document.getElementById('gasto-monto').value = "";
+                guardar();
             }
-        };
+        }
 
-        // Utils
-        const Utils = {
-            formatMoney(amount) {
-                const conf = Store.get('config');
-                const currency = conf ? conf.currency : 'COP';
-                return new Intl.NumberFormat('es-ES', { style: 'currency', currency: currency, maximumFractionDigits: 0 }).format(amount);
-            },
-            generateId() { return Date.now().toString(36) + Math.random().toString(36).substr(2); }
-        };
+        function borrarGasto(i) {
+            datosBoda.gastos.splice(i, 1);
+            guardar();
+        }
 
-        // App Core
-        const App = {
-            init() {
-                Store.init();
-                Settings.init();
-                const config = Store.get('config');
-                if (!config) {
-                    document.getElementById('wizard-view').classList.remove('hidden');
-                    document.querySelector('.bottom-nav').classList.add('hidden');
-                } else {
-                    this.navigate('inicio');
-                }
-            },
-            navigate(screenId) {
-                document.querySelectorAll('.view-container').forEach(el => el.classList.add('hidden'));
-                document.querySelectorAll('.sub-screen').forEach(el => el.classList.add('hidden'));
-                document.getElementById('mas-screen').classList.remove('hidden'); 
-                
-                const view = document.getElementById(`${screenId}-view`);
-                if(view) view.classList.remove('hidden');
-                
-                const nav = document.querySelector('.bottom-nav');
-                if (screenId === 'wizard') {
-                    nav.classList.add('hidden');
-                } else {
-                    nav.classList.remove('hidden');
-                    document.querySelectorAll('.bottom-nav button').forEach(btn => btn.classList.remove('active'));
-                    const autoBtn = document.querySelector(`.bottom-nav button[onclick*="${screenId}"]`);
-                    if(autoBtn) autoBtn.classList.add('active');
-                }
-
-                if (screenId === 'inicio') Dashboard.render();
-                if (screenId === 'presupuesto') Budget.render();
-                if (screenId === 'agenda') Agenda.render();
-                if (screenId === 'invitados') Guests.render();
-            },
-            showToast(msg) {
-                const toast = document.getElementById('toast');
-                toast.textContent = msg;
-                toast.classList.add('show');
-                setTimeout(() => toast.classList.remove('show'), 2500);
-            },
-            fireConfetti() {
-                const rootStyles = getComputedStyle(document.body);
-                const colors = [
-                    rootStyles.getPropertyValue('--theme-primary').trim(),
-                    rootStyles.getPropertyValue('--theme-accent').trim(),
-                    rootStyles.getPropertyValue('--theme-secondary').trim(),
-                    '#FFFFFF'
-                ];
-
-                for (let i = 0; i < 40; i++) {
-                    let conf = document.createElement('div');
-                    conf.className = 'confetti';
-                    conf.style.left = Math.random() * 100 + 'vw';
-                    conf.style.top = -20 + 'px';
-                    conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)] || '#D6BD7D';
-                    conf.style.animationDuration = (Math.random() * 2 + 2) + 's';
-                    document.body.appendChild(conf);
-                    setTimeout(() => conf.remove(), 4000);
-                }
-            }
-        };
-
-        // Wizard
-        const Wizard = {
-            next(step) {
-                document.querySelectorAll('.wizard-step').forEach(el => el.classList.add('hidden'));
-                document.getElementById(`step-${step}`).classList.remove('hidden');
-            },
-            finish() {
-                const n1 = document.getElementById('wiz-name1').value || 'M';
-                const n2 = document.getElementById('wiz-name2').value || 'J';
-                const city = document.getElementById('wiz-city').value;
-                const date = document.getElementById('wiz-date').value;
-                const curr = document.getElementById('wiz-currency').value;
-                const budg = parseInt(document.getElementById('wiz-budget').value) || 0;
-                
-                const guests = document.getElementById('wiz-guests').value;
-                const wStyle = document.getElementById('wiz-wedding-type').value || 'Boda';
-                const appTheme = document.getElementById('wiz-style').value || 'theme-romantico';
-                
-                Store.set('config', { 
-                    name1: n1, name2: n2, city, date, currency: curr, 
-                    budget: budg, guests, weddingStyle: wStyle 
-                });
-                
-                Settings.changeTheme(appTheme);
-                
-                App.fireConfetti();
-                App.navigate('inicio');
-            }
-        };
-
-        // Dashboard
-        const Dashboard = {
-            render() {
-                const conf = Store.get('config');
-                if(!conf) return;
-                
-                document.getElementById('dash-names').textContent = `${conf.name1} & ${conf.name2}`;
-                
-                if(conf.date) {
-                    const target = new Date(conf.date).getTime();
-                    const now = new Date().getTime();
-                    const diff = target - now;
-                    if(diff > 0) {
-                        const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
-                        document.getElementById('dash-countdown').textContent = `${days} Días`;
-                        const opts = { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' };
-                        
-                        const displayStyle = conf.weddingStyle && conf.weddingStyle !== 'Boda' ? ` • Boda ${conf.weddingStyle}` : '';
-                        document.getElementById('dash-date').textContent = new Date(conf.date).toLocaleDateString('es-ES', opts) + displayStyle;
-                    } else {
-                        document.getElementById('dash-countdown').textContent = "¡Es hoy!";
-                    }
-                }
-
-                const budgetList = Store.get('budget');
-                const totalEstimado = budgetList.reduce((sum, item) => sum + parseInt(item.est || 0), 0);
-                let pctBudget = conf.budget > 0 ? Math.min(100, Math.round((totalEstimado / conf.budget) * 100)) : 0;
-                document.getElementById('dash-budget-pct').textContent = `${pctBudget}%`;
-                document.getElementById('dash-budget-bar').style.width = `${pctBudget}%`;
-
-                const tasks = Store.get('tasks');
-                const done = tasks.filter(t => t.done).length;
-                document.getElementById('dash-tasks-count').textContent = `${done} / ${tasks.length} completadas`;
-            }
-        };
-
-        // Presupuesto
-        const Budget = {
-            chartInstance: null,
-            switchTab(tabId, el) {
-                document.querySelectorAll('#presupuesto-view .tab').forEach(t => t.classList.remove('active'));
-                el.classList.add('active');
-                document.getElementById('budget-lista').classList.add('hidden');
-                document.getElementById('budget-graficos').classList.add('hidden');
-                document.getElementById(`budget-${tabId}`).classList.remove('hidden');
-                if(tabId === 'graficos') this.renderChart();
-            },
-            openModal(id = null) {
-                const modalTitle = document.getElementById('gasto-modal-title');
-                if (id) {
-                    modalTitle.textContent = "Editar Gasto";
-                    const list = Store.get('budget');
-                    const item = list.find(i => i.id === id);
-                    if (item) {
-                        document.getElementById('gasto-edit-id').value = item.id;
-                        document.getElementById('gasto-cat').value = item.cat;
-                        document.getElementById('gasto-prov').value = item.prov;
-                        document.getElementById('gasto-est').value = item.est || '';
-                        document.getElementById('gasto-real').value = item.real || '';
-                        document.getElementById('gasto-pagado').value = item.pagado || '';
-                        document.getElementById('gasto-fecha').value = item.fecha || '';
-                        document.getElementById('gasto-apadrinado').checked = item.apadrinado || false;
-                    }
-                } else {
-                    modalTitle.textContent = "Añadir Gasto";
-                    document.getElementById('gasto-edit-id').value = '';
-                    document.getElementById('gasto-prov').value = '';
-                    document.getElementById('gasto-est').value = '';
-                    document.getElementById('gasto-real').value = '';
-                    document.getElementById('gasto-pagado').value = '';
-                    document.getElementById('gasto-fecha').value = '';
-                    document.getElementById('gasto-apadrinado').checked = false;
-                }
-                document.getElementById('modal-gasto').classList.add('active');
-            },
-            closeModal() { 
-                document.getElementById('modal-gasto').classList.remove('active'); 
-            },
-            save() {
-                const prov = document.getElementById('gasto-prov').value;
-                if(!prov) return App.showToast("Ingresa un detalle");
-                
-                const editId = document.getElementById('gasto-edit-id').value;
-                const cat = document.getElementById('gasto-cat').value;
-                const est = parseInt(document.getElementById('gasto-est').value) || 0;
-                const real = parseInt(document.getElementById('gasto-real').value) || 0;
-                const pagado = parseInt(document.getElementById('gasto-pagado').value) || 0;
-                const fecha = document.getElementById('gasto-fecha').value;
-                const apadrinado = document.getElementById('gasto-apadrinado').checked;
-
-                const list = Store.get('budget');
-
-                if (editId) {
-                    const index = list.findIndex(i => i.id === editId);
-                    if (index !== -1) {
-                        list[index] = { id: editId, cat, prov, est, real, pagado, fecha, apadrinado };
-                    }
-                } else {
-                    list.push({ id: Utils.generateId(), cat, prov, est, real, pagado, fecha, apadrinado });
-                }
-
-                Store.set('budget', list);
-
-                if(fecha) {
-                    const events = Store.get('events');
-                    events.push({ id: Utils.generateId(), titulo: `Pago: ${prov}`, fecha, type: 'pago' });
-                    Store.set('events', events);
-                }
-
-                this.closeModal();
-                this.render();
-                App.showToast(editId ? "Gasto actualizado" : "Gasto guardado");
-            },
-            delete(id, event) {
-                if (event) event.stopPropagation();
-                let list = Store.get('budget');
-                list = list.filter(i => i.id !== id);
-                Store.set('budget', list);
-                this.render();
-                App.showToast("Gasto eliminado");
-            },
-            render() {
-                const list = Store.get('budget');
-                const conf = Store.get('config');
-                const budgetLimit = conf ? conf.budget : 0;
-                const container = document.getElementById('categories-container');
-                container.innerHTML = '';
-
-                let totalBoda = 0; 
-                let totalApadrinado = 0; 
-                let totalRealTuBolsillo = 0; 
-
-                const grouped = list.reduce((acc, curr) => {
-                    const valorUso = curr.real > 0 ? curr.real : curr.est;
-                    totalBoda += valorUso;
-                    
-                    if (curr.apadrinado) totalApadrinado += valorUso;
-                    else totalRealTuBolsillo += valorUso;
-
-                    if(!acc[curr.cat]) acc[curr.cat] = { est: 0, real: 0, items: [] };
-                    acc[curr.cat].est += curr.est;
-                    acc[curr.cat].real += curr.real;
-                    acc[curr.cat].items.push(curr);
-                    return acc;
-                }, {});
-
-                document.getElementById('budget-total-boda').textContent = Utils.formatMoney(totalBoda);
-                document.getElementById('budget-total-apadrinado').textContent = Utils.formatMoney(totalApadrinado);
-                document.getElementById('budget-total-real').textContent = Utils.formatMoney(totalRealTuBolsillo);
-                
-                const diff = budgetLimit - totalRealTuBolsillo;
-                const lbl = document.getElementById('budget-status-label');
-                const amt = document.getElementById('budget-status-amount');
-                if(diff >= 0) {
-                    lbl.textContent = "Te sobran"; amt.style.color = "var(--theme-primary)";
-                } else {
-                    lbl.textContent = "Te pasaste por"; amt.style.color = "var(--color-danger)";
-                }
-                amt.textContent = Utils.formatMoney(Math.abs(diff));
-
-                for (const cat in grouped) {
-                    const c = grouped[cat];
-                    const catValor = c.real > 0 ? c.real : c.est;
-                    const div = document.createElement('div');
-                    div.className = 'category-item';
-                    
-                    let itemsHtml = c.items.map(i => {
-                        const statusClass = i.pagado >= (i.real || i.est) ? 'status-pagado' : (i.pagado > 0 ? 'status-abonado' : 'status-pendiente');
-                        const apaBadge = i.apadrinado ? '<span class="badge-apadrinado">Apadrinado 🎁</span>' : '';
-                        return `
-                        <div class="expense-row" onclick="Budget.openModal('${i.id}')" style="cursor: pointer;" title="Toca para editar">
-                            <div>
-                                <div style="display:flex; align-items:center;">
-                                    <span class="status-dot ${statusClass}"></span>
-                                    <strong style="font-weight: 500;">${i.prov}</strong> ${apaBadge}
-                                </div>
-                                <span class="text-muted" style="font-size:12px; margin-left:22px;">${i.fecha ? 'Vence: '+i.fecha : ''}</span>
-                            </div>
-                            <div class="text-right" style="display:flex; align-items:center;">
-                                <div>
-                                    <div style="font-weight:600;">${Utils.formatMoney(i.real || i.est)}</div>
-                                    <div class="text-muted" style="font-size:11px;">Pagado: ${Utils.formatMoney(i.pagado)}</div>
-                                </div>
-                                <button class="delete-btn" onclick="Budget.delete('${i.id}', event)">×</button>
-                            </div>
-                        </div>`;
-                    }).join('');
-
-                    div.innerHTML = `
-                        <div class="cat-head" onclick="this.parentElement.classList.toggle('expanded')">
-                            <span>${cat}</span>
-                            <span style="font-weight:600; color: var(--theme-primary);">${Utils.formatMoney(catValor)} <span style="font-size:12px; margin-left:5px;">▼</span></span>
-                        </div>
-                        <div class="cat-body">${itemsHtml}</div>
-                    `;
-                    container.appendChild(div);
-                }
-            },
-            renderChart() {
-                const list = Store.get('budget');
-                const ctx = document.getElementById('budgetChart');
-                
-                const dataGroup = list.reduce((acc, curr) => {
-                    if(!curr.apadrinado) {
-                        acc[curr.cat] = (acc[curr.cat] || 0) + (curr.real > 0 ? curr.real : curr.est);
-                    }
-                    return acc;
-                }, {});
-
-                const rs = getComputedStyle(document.body);
-                const colors = [
-                    rs.getPropertyValue('--theme-primary').trim(),
-                    rs.getPropertyValue('--theme-accent').trim(),
-                    rs.getPropertyValue('--theme-secondary').trim(),
-                    rs.getPropertyValue('--theme-light').trim(),
-                    rs.getPropertyValue('--color-danger').trim(),
-                    rs.getPropertyValue('--color-text-muted').trim()
-                ];
-
-                if(this.chartInstance) this.chartInstance.destroy();
-                this.chartInstance = new Chart(ctx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: Object.keys(dataGroup),
-                        datasets: [{
-                            data: Object.values(dataGroup),
-                            backgroundColor: colors,
-                            borderWidth: 0
-                        }]
-                    },
-                    options: { cutout: '75%', plugins: { legend: { position: 'bottom', labels: { font: { family: 'Montserrat' } } } } }
-                });
-            }
-        };
-
-        // Agenda y Tareas
-        const Agenda = {
-            currentDate: new Date(),
-            switchTab(tabId, el) {
-                document.querySelectorAll('#agenda-view .tab').forEach(t => t.classList.remove('active'));
-                el.classList.add('active');
-                document.getElementById('agenda-calendario').classList.add('hidden');
-                document.getElementById('agenda-tareas').classList.add('hidden');
-                document.getElementById(`agenda-${tabId}`).classList.remove('hidden');
-            },
-            openModal() { document.getElementById('modal-evento').classList.add('active'); },
-            closeModal() { document.getElementById('modal-evento').classList.remove('active'); },
-            openTaskModal(id = null) {
-                const title = document.getElementById('task-modal-title');
-                if(id) {
-                    title.textContent = "Editar Tarea";
-                    const tasks = Store.get('tasks');
-                    const task = tasks.find(t => t.id === id);
-                    if(task) {
-                        document.getElementById('task-edit-id').value = task.id;
-                        document.getElementById('task-desc').value = task.desc;
-                    }
-                } else {
-                    title.textContent = "Añadir Tarea";
-                    document.getElementById('task-edit-id').value = '';
-                    document.getElementById('task-desc').value = '';
-                }
-                document.getElementById('modal-tarea').classList.add('active');
-            },
-            closeTaskModal() { document.getElementById('modal-tarea').classList.remove('active'); },
-            changeMonth(dir) {
-                this.currentDate.setMonth(this.currentDate.getMonth() + dir);
-                this.renderCalendar();
-            },
-            save() {
-                const titulo = document.getElementById('ev-titulo').value;
-                const fecha = document.getElementById('ev-fecha').value;
-                if(!titulo || !fecha) return;
-                
-                const events = Store.get('events');
-                events.push({ id: Utils.generateId(), titulo, fecha, type: 'cita' });
-                Store.set('events', events);
-                this.closeModal();
-                this.render();
-                App.showToast("Evento guardado");
-            },
-            saveTask() {
-                const desc = document.getElementById('task-desc').value;
-                if(!desc) return App.showToast("Ingresa la descripción");
-                const editId = document.getElementById('task-edit-id').value;
-                let tasks = Store.get('tasks');
-
-                if(editId) {
-                    let task = tasks.find(t => t.id == editId);
-                    if(task) task.desc = desc;
-                } else {
-                    tasks.push({ id: Utils.generateId(), desc, done: false });
-                }
-                Store.set('tasks', tasks);
-                this.closeTaskModal();
-                this.renderTasks();
-                App.showToast(editId ? "Tarea actualizada" : "Tarea añadida");
-            },
-            delete(id) {
-                let list = Store.get('events');
-                Store.set('events', list.filter(i => i.id !== id));
-                this.render();
-                App.showToast("Evento eliminado");
-            },
-            deleteTask(id, event) {
-                if(event) event.stopPropagation();
-                let tasks = Store.get('tasks');
-                Store.set('tasks', tasks.filter(t => t.id != id));
-                this.renderTasks();
-                App.showToast("Tarea eliminada");
-            },
-            toggleTask(id) {
-                let tasks = Store.get('tasks');
-                let task = tasks.find(t => t.id == id);
-                if(task) {
-                    task.done = !task.done;
-                    Store.set('tasks', tasks);
-                    if(task.done) App.fireConfetti();
-                    this.renderTasks();
-                }
-            },
-            render() {
-                this.renderCalendar();
-                this.renderTasks();
-            },
-            renderCalendar() {
-                const grid = document.getElementById('calendar-grid');
-                const title = document.getElementById('calendar-month-year');
-                const list = document.getElementById('events-list');
-                const events = Store.get('events') || [];
-                
-                const year = this.currentDate.getFullYear();
-                const month = this.currentDate.getMonth();
-                title.textContent = this.currentDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
-                
-                grid.innerHTML = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'].map(d => `<div class="calendar-day-header">${d}</div>`).join('');
-                
-                let firstDay = new Date(year, month, 1).getDay();
-                firstDay = firstDay === 0 ? 7 : firstDay;
-                const daysInMonth = new Date(year, month + 1, 0).getDate();
-                
-                for(let i = 1; i < firstDay; i++) grid.innerHTML += `<div></div>`;
-                
-                for(let i = 1; i <= daysInMonth; i++) {
-                    const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
-                    const hasEvent = events.some(e => e.fecha === dateStr);
-                    grid.innerHTML += `<div class="calendar-day ${hasEvent ? 'has-event' : ''}">${i}</div>`;
-                }
-
-                const futureEvents = events.filter(e => new Date(e.fecha) >= new Date(new Date().setHours(0,0,0,0))).sort((a,b) => new Date(a.fecha) - new Date(b.fecha));
-                list.innerHTML = futureEvents.map(e => `
-                    <div class="card flex justify-between items-center" style="padding:20px; margin-bottom: 12px;">
-                        <div>
-                            <strong style="font-weight: 600; font-size: 15px;">${e.titulo}</strong>
-                            <div class="text-muted" style="margin-top: 6px;">${new Date(e.fecha).toLocaleDateString('es-ES', {timeZone:'UTC'})}</div>
-                        </div>
-                        <button class="delete-btn" onclick="Agenda.delete('${e.id}')">×</button>
-                    </div>
-                `).join('');
-            },
-            renderTasks() {
-                const list = document.getElementById('tasks-list');
-                const tasks = Store.get('tasks');
-                const done = tasks.filter(t => t.done).length;
-                const pct = tasks.length > 0 ? Math.round((done / tasks.length) * 100) : 0;
-                
-                document.getElementById('tasks-pct').textContent = `${pct}%`;
-                document.getElementById('tasks-bar').style.width = `${pct}%`;
-                
-                list.innerHTML = tasks.map(t => `
-                    <div class="task-item ${t.done ? 'completed' : ''}">
-                        <div class="task-checkbox" onclick="Agenda.toggleTask('${t.id}')"></div>
-                        <span style="font-weight: 500; flex: 1; cursor: pointer;" onclick="Agenda.openTaskModal('${t.id}')">${t.desc}</span>
-                        <button class="delete-btn" onclick="Agenda.deleteTask('${t.id}', event)">×</button>
-                    </div>
-                `).join('');
-            }
-        };
-
-        // Invitados y Mesas
-        const Guests = {
-            switchTab(tabId, el) {
-                document.querySelectorAll('#invitados-view .tab').forEach(t => t.classList.remove('active'));
-                el.classList.add('active');
-                document.getElementById('guests-lista').classList.add('hidden');
-                document.getElementById('guests-mesas').classList.add('hidden');
-                document.getElementById(`guests-${tabId}`).classList.remove('hidden');
-                if(tabId === 'mesas') this.initSortable();
-            },
-            openModal() { document.getElementById('modal-guest').classList.add('active'); },
-            closeModal() { document.getElementById('modal-guest').classList.remove('active'); },
-            openTableModal() { document.getElementById('modal-table').classList.add('active'); },
-            closeTableModal() { document.getElementById('modal-table').classList.remove('active'); },
-            save() {
-                const nombre = document.getElementById('guest-name').value;
-                if(!nombre) return App.showToast("Ingresa un nombre");
-                const list = Store.get('guests');
-                list.push({
-                    id: Utils.generateId(), nombre,
-                    grupo: document.getElementById('guest-group').value,
-                    esNino: document.getElementById('guest-child').checked,
-                    estado: document.getElementById('guest-status').value,
-                    telefono: document.getElementById('guest-phone').value,
-                    mesaId: null
-                });
-                Store.set('guests', list);
-                this.closeModal(); this.render();
-                App.showToast("Invitado guardado");
-            },
-            saveTable() {
-                const name = document.getElementById('table-name').value;
-                const cap = parseInt(document.getElementById('table-cap').value) || 8;
-                if(!name) return App.showToast("Dale un nombre a la mesa");
-                const tables = Store.get('tables');
-                tables.push({ id: Utils.generateId(), name, cap });
-                Store.set('tables', tables);
-                this.closeTableModal(); this.renderMesas();
-                App.showToast("Mesa creada");
-            },
-            delete(id) {
-                let list = Store.get('guests');
-                Store.set('guests', list.filter(i => i.id !== id));
-                this.render();
-                App.showToast("Invitado eliminado");
-            },
-            sendWA(phone, name) {
-                if(!phone) return App.showToast("No hay teléfono guardado");
-                const conf = Store.get('config');
-                const msg = encodeURIComponent(`¡Hola ${name}! Queremos invitarte a nuestra boda (${conf.name1} y ${conf.name2}). Por favor confirma tu asistencia.`);
-                window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
-            },
-            render() {
-                const list = Store.get('guests');
-                document.getElementById('guest-count-total').textContent = list.length;
-                document.getElementById('guest-count-conf').textContent = list.filter(g => g.estado === 'Confirmado').length;
-                document.getElementById('guest-count-pend').textContent = list.filter(g => g.estado === 'Pendiente').length;
-
-                document.getElementById('guests-container').innerHTML = list.map(g => `
-                    <div class="guest-card">
-                        <div>
-                            <div style="font-weight:600; font-size: 16px;">${g.nombre} ${g.esNino ? '🎈' : ''}</div>
-                            <div class="text-muted" style="margin-top: 6px;">${g.grupo} • ${g.estado}</div>
-                        </div>
-                        <div class="flex items-center">
-                            <button class="btn-icon" onclick="Guests.sendWA('${g.telefono}', '${g.nombre}')"><svg width="20" viewBox="0 0 24 24"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2m0 16.5c-1.45 0-2.88-.38-4.12-1.12l-.3-.17-3.08.8.83-3-.2-.33c-.79-1.25-1.21-2.71-1.21-4.25 0-4.58 3.75-8.33 8.33-8.33s8.33 3.75 8.33 8.33-3.75 8.33-8.33 8.33m4.54-5.92c-.25-.12-1.46-.71-1.67-.79-.21-.08-.38-.12-.54.12s-.62.79-.75.96c-.12.17-.29.21-.54.08-.25-.12-1.04-.38-1.98-1.23-.73-.65-1.23-1.46-1.38-1.71-.12-.25-.01-.38.12-.5.12-.12.25-.29.38-.46.12-.17.17-.29.25-.5.08-.21.04-.38-.04-.5-.08-.12-.54-1.29-.75-1.79-.21-.46-.42-.42-.54-.42H8.46c-.21 0-.54.08-.83.42-.29.33-1.08 1.04-1.08 2.54s1.12 2.96 1.29 3.17c.17.21 2.17 3.33 5.25 4.67 2.12.92 2.83.96 3.83.83 1.08-.12 3.42-1.38 3.92-2.71.5-1.33.5-2.46.33-2.71-.12-.25-.46-.38-.71-.5z"/></svg></button>
-                            <button class="delete-btn" onclick="Guests.delete('${g.id}')">×</button>
-                        </div>
-                    </div>
-                `).join('');
-                this.renderMesas();
-            },
-            renderMesas() {
-                const guests = Store.get('guests');
-                const tables = Store.get('tables');
-                
-                const unassigned = guests.filter(g => !g.mesaId);
-                document.getElementById('unassigned-count').textContent = unassigned.length;
-                document.getElementById('guests-unassigned').innerHTML = unassigned.map(g => `<div class="guest-drag-item" data-id="${g.id}">${g.nombre}</div>`).join('');
-                
-                document.getElementById('tables-container').innerHTML = tables.map(t => {
-                    const tGuests = guests.filter(g => g.mesaId === t.id);
-                    return `
-                    <div class="card">
-                        <div class="flex justify-between items-center" style="margin-bottom:20px;">
-                            <span class="font-title" style="font-size:20px; color: var(--theme-primary);">${t.name}</span>
-                            <span class="text-muted">${tGuests.length} / ${t.cap} sillas</span>
-                        </div>
-                        <div class="table-dropzone" data-table-id="${t.id}" data-cap="${t.cap}">
-                            ${tGuests.map(g => `<div class="guest-drag-item" data-id="${g.id}">${g.nombre}</div>`).join('')}
-                        </div>
-                    </div>`;
-                }).join('');
-            },
-            initSortable() {
-                if(typeof Sortable === 'undefined') return;
-                const zones = document.querySelectorAll('.table-dropzone');
-                zones.forEach(zone => {
-                    new Sortable(zone, {
-                        group: 'mesas', animation: 200, ghostClass: 'highlight', delay: 100, delayOnTouchOnly: true,
-                        onEnd: (evt) => {
-                            const guestId = evt.item.dataset.id;
-                            const toZone = evt.to;
-                            const newTableId = toZone.dataset.tableId === 'none' ? null : toZone.dataset.tableId;
-                            
-                            if(newTableId && toZone.children.length > parseInt(toZone.dataset.cap)) {
-                                App.showToast("Mesa llena");
-                                evt.from.appendChild(evt.item);
-                                return;
-                            }
-                            
-                            const guests = Store.get('guests');
-                            const g = guests.find(i => i.id === guestId);
-                            if(g) { g.mesaId = newTableId; Store.set('guests', guests); this.renderMesas(); this.initSortable(); }
-                        }
-                    });
-                });
-            }
-        };
-
-        // Hub (Más) y Submódulos
-        const MoreMenu = {
-            open(screenId) {
-                document.getElementById('mas-screen').classList.add('hidden');
-                document.getElementById(`${screenId}-screen`).classList.remove('hidden');
-                if (screenId === 'proveedores') Vendors.render();
-                if (screenId === 'inspiracion') Inspiration.render();
-                if (screenId === 'grandia') Timeline.render();
-            },
-            back() {
-                document.querySelectorAll('.sub-screen').forEach(el => el.classList.add('hidden'));
-                document.getElementById('mas-screen').classList.remove('hidden');
-            }
-        };
-
-        const Vendors = {
-            openModal() { document.getElementById('modal-vendor').classList.add('active'); },
-            closeModal() { document.getElementById('modal-vendor').classList.remove('active'); },
-            save() {
-                const nombre = document.getElementById('vendor-name').value;
-                if(!nombre) return App.showToast("Ingresa un nombre");
-                const list = Store.get('vendors') || [];
-                list.push({ id: Utils.generateId(), nombre, cat: document.getElementById('vendor-cat').value, phone: document.getElementById('vendor-phone').value });
-                Store.set('vendors', list);
-                this.closeModal(); this.render();
-                App.showToast("Proveedor guardado");
-            },
-            delete(id) {
-                Store.set('vendors', Store.get('vendors').filter(v => v.id !== id));
-                this.render();
-                App.showToast("Proveedor eliminado");
-            },
-            render() {
-                document.getElementById('vendors-list').innerHTML = (Store.get('vendors') || []).map(v => `
-                    <div class="card flex justify-between items-center">
-                        <div>
-                            <div style="font-weight:600; font-size: 16px;">${v.nombre}</div>
-                            <div class="text-muted" style="margin-top: 6px;">${v.cat}</div>
-                        </div>
-                        <div class="flex items-center">
-                            ${v.phone ? `<button class="btn-icon" onclick="Guests.sendWA('${v.phone}', 'Hola, los contacto sobre mi boda')"><svg width="20" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2m0 16.5c-1.45 0-2.88-.38-4.12-1.12l-.3-.17-3.08.8.83-3-.2-.33c-.79-1.25-1.21-2.71-1.21-4.25 0-4.58 3.75-8.33 8.33-8.33s8.33 3.75 8.33 8.33-3.75 8.33-8.33 8.33z"/></svg></button>` : ''}
-                            <button class="delete-btn" onclick="Vendors.delete('${v.id}')">×</button>
-                        </div>
-                    </div>
-                `).join('');
-            }
-        };
-
-        const Inspiration = {
-            async upload(event) {
-                const file = event.target.files[0];
-                if(!file) return;
-                const reader = new FileReader();
-                reader.onload = async (e) => {
-                    await ImageStore.save(Utils.generateId(), e.target.result);
-                    this.render();
-                    App.showToast("Imagen guardada");
-                };
-                reader.readAsDataURL(file);
-            },
-            async delete(id) { await ImageStore.delete(id); this.render(); },
-            async render() {
-                const images = await ImageStore.getAll();
-                document.getElementById('mood-grid').innerHTML = images.map(img => `
-                    <div class="masonry-item">
-                        <img src="${img.dataUrl}">
-                        <button class="delete-img" onclick="Inspiration.delete('${img.id}')">✕</button>
-                    </div>
-                `).join('');
-            }
-        };
-
-        const Timeline = {
-            openModal() { document.getElementById('modal-timeline').classList.add('active'); },
-            closeModal() { document.getElementById('modal-timeline').classList.remove('active'); },
-            save() {
-                const time = document.getElementById('tl-time').value;
-                const act = document.getElementById('tl-act').value;
-                if(!time || !act) return App.showToast("Faltan datos");
-                const list = Store.get('timeline') || [];
-                list.push({ id: Utils.generateId(), time, act, req: document.getElementById('tl-encargado').value });
-                Store.set('timeline', list);
-                this.closeModal(); this.render();
-                App.showToast("Actividad guardada");
-            },
-            delete(id) { Store.set('timeline', Store.get('timeline').filter(t => t.id !== id)); this.render(); },
-            render() {
-                let list = Store.get('timeline') || [];
-                list.sort((a,b) => a.time.localeCompare(b.time));
-                document.getElementById('timeline-list').innerHTML = list.map(t => `
-                    <div style="position:relative; padding-bottom:25px;">
-                        <div style="position:absolute; left:-32px; top:12px; width:16px; height:16px; border-radius:50%; background:var(--theme-primary); box-shadow: 0 0 0 5px var(--theme-light);"></div>
-                        <div class="card" style="margin-bottom:0; display:flex; justify-content:space-between; align-items: center; padding: 20px;">
-                            <div>
-                                <strong class="font-title" style="color:var(--theme-primary); font-size: 20px; margin-right: 12px;">${t.time}</strong> 
-                                <span style="font-weight: 500; font-size: 16px;">${t.act}</span><br>
-                                <span class="text-muted" style="font-size:13px; margin-top:8px; display:inline-block;">${t.req}</span>
-                            </div>
-                            <button class="delete-btn" onclick="Timeline.delete('${t.id}')">×</button>
-                        </div>
-                    </div>
-                `).join('');
-            }
-        };
-
-        // Ajustes y Config
-        const Settings = {
-            init() {
-                const savedTheme = Store.get('app_theme') || 'theme-romantico';
-                this.applyTheme(savedTheme);
-                const themeSelector = document.getElementById('theme-selector');
-                if(themeSelector) themeSelector.value = savedTheme;
-
-                const isDark = Store.get('dark_mode') === true;
-                document.getElementById('toggle-dark').checked = isDark;
-                if(isDark) document.body.classList.add('dark-mode');
-            },
-            changeTheme(themeClass) {
-                Store.set('app_theme', themeClass);
-                this.applyTheme(themeClass);
-            },
-            applyTheme(themeClass) {
-                document.body.classList.remove('theme-romantico', 'theme-campestre', 'theme-playa');
-                document.body.classList.add(themeClass);
-            },
-            toggleDark() {
-                const isDark = document.getElementById('toggle-dark').checked;
-                if(isDark) document.body.classList.add('dark-mode');
-                else document.body.classList.remove('dark-mode');
-                Store.set('dark_mode', isDark);
-            },
-            openEditConfigModal() {
-                const conf = Store.get('config');
-                if(!conf) return;
-                document.getElementById('cfg-name1').value = conf.name1 || '';
-                document.getElementById('cfg-name2').value = conf.name2 || '';
-                document.getElementById('cfg-city').value = conf.city || '';
-                document.getElementById('cfg-date').value = conf.date || '';
-                document.getElementById('cfg-currency').value = conf.currency || 'COP';
-                document.getElementById('cfg-budget').value = conf.budget || 0;
-                document.getElementById('cfg-wedding-type').value = conf.weddingStyle || 'Clásica';
-                document.getElementById('modal-edit-config').classList.add('active');
-            },
-            closeEditConfigModal() {
-                document.getElementById('modal-edit-config').classList.remove('active');
-            },
-            saveEditConfig() {
-                const conf = Store.get('config') || {};
-                conf.name1 = document.getElementById('cfg-name1').value || 'M';
-                conf.name2 = document.getElementById('cfg-name2').value || 'J';
-                conf.city = document.getElementById('cfg-city').value;
-                conf.date = document.getElementById('cfg-date').value;
-                conf.currency = document.getElementById('cfg-currency').value;
-                conf.budget = parseInt(document.getElementById('cfg-budget').value) || 0;
-                conf.weddingStyle = document.getElementById('cfg-wedding-type').value;
-
-                Store.set('config', conf);
-                this.closeEditConfigModal();
-                Dashboard.render();
-                App.showToast("Datos de la boda actualizados");
-            },
-            printPDF() {
-                document.querySelectorAll('.category-item').forEach(el => el.classList.add('expanded'));
-                window.print();
-            },
-            async exportJSON() {
-                App.showToast("Preparando respaldo...");
-                const data = {
-                    config: Store.get('config'), budget: Store.get('budget'), events: Store.get('events'),
-                    tasks: Store.get('tasks'), guests: Store.get('guests'), tables: Store.get('tables'),
-                    vendors: Store.get('vendors'), timeline: Store.get('timeline'), app_theme: Store.get('app_theme'),
-                    images: await ImageStore.getAll()
-                };
-                
-                const blob = new Blob([JSON.stringify(data)], { type: "application/json" });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url; a.download = `Respaldo_Boda.json`;
-                document.body.appendChild(a); a.click(); document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-                App.showToast("Respaldo descargado");
-            },
-            importJSON(event) {
-                const file = event.target.files[0];
-                if (!file) return;
-                const reader = new FileReader();
-                reader.onload = async (e) => {
-                    try {
-                        const data = JSON.parse(e.target.result);
-                        ['config','budget','events','tasks','guests','tables','vendors','timeline', 'app_theme'].forEach(key => {
-                            if(data[key]) Store.set(key, data[key]);
-                        });
-                        
-                        if(data.images && Array.isArray(data.images)) {
-                            const db = await ImageStore.initDB();
-                            const tx = db.transaction(ImageStore.STORE_NAME, 'readwrite');
-                            tx.objectStore(ImageStore.STORE_NAME).clear();
-                            for(let img of data.images) await ImageStore.save(img.id, img.dataUrl);
-                        }
-                        App.showToast("¡Restaurado! Recargando...");
-                        setTimeout(() => window.location.reload(), 1500);
-                    } catch (err) { App.showToast("Archivo inválido"); }
-                };
-                reader.readAsText(file);
-            }
-        };
-
-        // Iniciar la app
-        document.addEventListener('DOMContentLoaded', () => {
-            App.init();
-        });
+        actualizarUI();
     </script>
 </body>
 </html>
-```
-
-#### Archivo 2: Configuración del paquete (`package.json`)
-1. Abre un nuevo **Bloc de notas**.
-2. Copia este código:
-```json:Package Configuration:package.json
-{
-  "name": "nuestra-boda",
-  "version": "1.0.0",
-  "description": "App para planear un matrimonio de principio a fin",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [
-    "wedding",
-    "planner",
-    "capacitor",
-    "android"
-  ],
-  "author": "Nuestra Boda",
-  "license": "MIT",
-  "dependencies": {
-    "@capacitor/android": "^6.0.0",
-    "@capacitor/core": "^6.0.0",
-    "@capacitor/cli": "^6.0.0"
-  }
-}
-```
-3. Guárdalo en la **raíz de la carpeta `nuestra-boda`** con el nombre exacto: `package.json`
-
-#### Archivo 3: Configuración de Capacitor (`capacitor.config.json`)
-1. Abre un nuevo **Bloc de notas**.
-2. Copia este código:
-```json:Capacitor Configuration:capacitor.config.json
-{
-  "appId": "com.nuestraboda.app",
-  "appName": "Nuestra Boda",
-  "webDir": "www",
-  "bundledWebRuntime": false
-}
-```
-3. Guárdalo en la **raíz de la carpeta `nuestra-boda`** con el nombre exacto: `capacitor.config.json`
-
-#### Archivo 4: El compilador automático de GitHub (`build-apk.yml`)
-1. Abre un nuevo **Bloc de notas**.
-2. Copia este código:
-```yaml:GitHub Actions Workflow:.github/workflows/build-apk.yml
-name: Build Android APK
-
-on:
-  push:
-    branches: [ "main" ]
-  workflow_dispatch:
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout del repositorio
-        uses: actions/checkout@v4
-
-      - name: Configurar Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Configurar Java JDK 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'zulu'
-          java-version: '17'
-
-      - name: Instalar dependencias
-        run: npm install
-
-      - name: Inicializar Capacitor Android
-        run: npx cap add android
-
-      - name: Sincronizar Capacitor
-        run: npx cap sync
-
-      - name: Construir el APK
-        working-directory: ./android
-        run: |
-          chmod +x gradlew
-          ./gradlew assembleDebug
-
-      - name: Subir el APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: NuestraBoda-APK
-          path: android/app/build/outputs/apk/debug/app-debug.apk
-```
-3. Guárdalo dentro de la carpeta `.github/workflows/` con el nombre exacto: `build-apk.yml`
-
----
-
-### Paso 3: Subirlo a GitHub y descargar tu APK
-1. Entra a [github.com](https://github.com/) e inicia sesión.
-2. En la esquina superior derecha, haz clic en el botón **`+`** y selecciona **New repository**.
-3. Ponle de nombre `nuestra-boda`, déjalo en **Public** y haz clic en **Create repository**.
-4. En la página de tu nuevo repositorio, haz clic en el texto azul que dice **"upload an existing file"**.
-5. Arrastra y suelta todos tus archivos y carpetas (`www/`, `.github/`, `package.json`, `capacitor.config.json`) directamente en la página de GitHub.
-6. Haz clic en el botón verde **Commit changes**.
-7. Ve a la pestaña **Actions** en la parte superior de tu repositorio. Verás que una tarea llamada *"Build Android APK"* comienza a correr de manera automática.
-8. Espera 3 o 4 minutos hasta que aparezca un check verde ✔️. Haz clic sobre esa tarea, baja hasta el final de la página donde dice **Artifacts**, y descarga el archivo comprimido que contiene tu **NuestraBoda-APK**.
-
-¡Descomprímelo, pásalo a tu teléfono Android, instálalo y listo! Tienes una aplicación profesional, privada y funcionando 100% offline.
