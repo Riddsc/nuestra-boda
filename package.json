@@ -1,14 +1,6 @@
 {
-  "name": "nuestra-boda",
-  "version": "1.0.0",
-  "description": "App para planear la boda",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "dependencies": {
-    "@capacitor/android": "^6.0.0",
-    "@capacitor/cli": "^6.0.0",
-    "@capacitor/core": "^6.0.0"
-  }
+  "appId": "com.nuestraboda.app",
+  "appName": "Nuestra Boda",
+  "webDir": "www",
+  "bundledWebRuntime": false
 }
