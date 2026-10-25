@@ -27,10 +27,18 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Verify www directory
+        run: |
+          ls -la
+          ls -la www || echo "Falta la carpeta www en la raíz"
+
       - name: Initialize Capacitor Android
         run: |
           npx cap add android
-          npx cap sync
+
+      - name: Copy Web Assets and Sync
+        run: |
+          npx cap sync android
 
       - name: Build Android Debug APK
         run: |
