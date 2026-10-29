@@ -2,11 +2,16 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#FFF7F8">
     <title>Nuestra Boda</title>
-    <!-- Librerías por CDN para previsualización -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <!-- Librerías: copia local (incluida en el APK por el workflow) y, si no existe, CDN -->
+    <script src="lib/chart.umd.js"></script>
+    <script src="lib/Sortable.min.js"></script>
+    <script>
+        if (!window.Chart) document.write('<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.js"><\/script>');
+        if (!window.Sortable) document.write('<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.3/Sortable.min.js"><\/script>');
+    </script>
     <!-- Fuentes Elegantes -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
     
@@ -212,6 +217,45 @@
         .sub-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-app); z-index: 50; animation: slideLeft 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
         @keyframes slideLeft { from { transform: translateX(30px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
+        /* ===== Mejoras v2 ===== */
+        .bottom-nav { height: calc(75px + env(safe-area-inset-bottom)); padding-bottom: env(safe-area-inset-bottom); }
+        .scrollable { padding-top: calc(25px + env(safe-area-inset-top)); padding-bottom: 110px; }
+        .budget-header { padding-top: calc(25px + env(safe-area-inset-top)); }
+        .modal-content { max-width: 560px; margin: 0 auto; }
+        .modal-title { margin-bottom: 25px; font-size: 24px; color: var(--theme-primary); }
+        .field-label { display: block; font-size: 12px; font-weight: 600; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: .6px; margin: 0 0 8px 4px; }
+        .empty-state { text-align: center; padding: 40px 20px; color: var(--color-text-muted); font-size: 14px; line-height: 1.6; }
+        .empty-state .big { font-size: 40px; display: block; margin-bottom: 10px; }
+
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 18px; }
+        .stat-card { background: var(--color-bg-card); border-radius: 22px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); cursor: pointer; }
+        .stat-card .num { font-size: 26px; font-weight: 600; color: var(--theme-primary); }
+        .stat-card .lbl { font-size: 12px; color: var(--color-text-muted); margin-top: 4px; }
+        .mini-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--color-border); font-size: 14px; }
+        .mini-row:last-child { border-bottom: none; }
+
+        .search-box { margin-bottom: 12px; }
+        .chips { display: flex; gap: 8px; overflow-x: auto; margin-bottom: 18px; padding-bottom: 4px; }
+        .chip { white-space: nowrap; padding: 9px 16px; border-radius: 20px; background: var(--color-bg-card); color: var(--color-text-muted); font-size: 13px; font-weight: 500; box-shadow: 0 4px 14px rgba(0,0,0,0.03); }
+        .chip.active { background: var(--theme-primary); color: #fff; }
+        .pill { font-size: 11px; padding: 4px 10px; border-radius: 12px; font-weight: 600; display: inline-block; }
+        .pill-Confirmado { background: var(--theme-light); color: var(--theme-primary); }
+        .pill-Pendiente { background: var(--theme-secondary); color: var(--color-text-main); }
+        .pill-No { background: var(--color-bg-input); color: var(--color-text-muted); }
+
+        .calendar-day { cursor: pointer; }
+        .calendar-day.today { box-shadow: inset 0 0 0 2px var(--theme-accent); }
+        .calendar-day.wedding { background: var(--theme-accent) !important; color: #fff !important; }
+        .calendar-day.wedding::before { content: '♥'; position: absolute; top: 1px; right: 4px; font-size: 9px; }
+        .calendar-day.selected { outline: 2px solid var(--theme-primary); }
+        .event-tag { font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 10px; background: var(--theme-light); color: var(--theme-primary); margin-right: 6px; }
+        .event-tag.pago { background: var(--theme-secondary); color: var(--color-text-main); }
+
+        body.dark-mode .hero-countdown { background: linear-gradient(135deg, #2E2729 0%, #2A2530 100%); }
+        body.dark-mode .hero-countdown > div, body.dark-mode .hero-edit { background: rgba(255,255,255,0.08) !important; }
+        body.dark-mode .card[style*="theme-secondary"], body.dark-mode .tab.active { background: var(--color-bg-input) !important; }
+        body.dark-mode .badge-apadrinado { color: #2a2525; }
+
         /* Impresión (PDF) */
         @media print {
             body { overflow: visible !important; height: auto !important; background: white; color: black; font-family: sans-serif;}
@@ -262,7 +306,7 @@
                     <option value="EUR">EUR (€)</option>
                     <option value="USD">USD ($)</option>
                 </select>
-                <input type="number" id="wiz-budget" placeholder="Ej. 15000000" style="width: 65%;">
+                <input type="number" inputmode="numeric" id="wiz-budget" placeholder="Ej. 15000000" style="width: 65%;">
             </div>
             <div class="wizard-controls">
                 <button class="btn-outline" style="width: auto;" onclick="Wizard.next(2)">Atrás</button>
@@ -307,33 +351,43 @@
     <div id="inicio-view" class="view-container hidden">
         <div class="scrollable">
             <div class="hero-countdown text-center">
-                <button onclick="Settings.openEditConfigModal()" style="position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.6); border-radius: 50%; width: 36px; height: 36px; font-size: 16px; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px);" title="Modificar datos">✏️</button>
+                <button class="hero-edit" onclick="Settings.openEditConfigModal()" style="position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.6); border-radius: 50%; width: 36px; height: 36px; font-size: 16px; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px);" title="Modificar datos">✏️</button>
                 <h2 class="font-title" id="dash-names" style="font-size: 36px; margin-bottom: 8px;">M & J</h2>
-                <p id="dash-date" style="font-size: 14px; font-weight: 500; opacity: 0.9; margin-bottom: 30px; text-transform: capitalize;">15 de Octubre, 2026</p>
+                <p id="dash-date" style="font-size: 14px; font-weight: 500; opacity: 0.9; margin-bottom: 30px;"></p>
                 <div style="background: rgba(255,255,255,0.45); padding: 20px; border-radius: 20px; backdrop-filter: blur(8px);">
-                    <span style="font-size: 12px; text-transform: uppercase; letter-spacing: 3px; font-weight: 600;">Faltan</span>
+                    <span id="dash-faltan-lbl" style="font-size: 12px; text-transform: uppercase; letter-spacing: 3px; font-weight: 600;">Faltan</span>
                     <h3 class="font-title" id="dash-countdown" style="font-size: 32px; margin-top: 8px; color: var(--theme-primary);">0 Días</h3>
+                    <p id="dash-countdown-sub" class="text-muted" style="margin-top: 6px;"></p>
+                </div>
+            </div>
+
+            <div class="card" onclick="App.navigate('presupuesto')" style="cursor:pointer;">
+                <div class="flex justify-between items-center" style="margin-bottom: 6px;">
+                    <span class="font-title" style="font-size: 20px;">Presupuesto</span>
+                    <span id="dash-budget-pct" class="text-muted" style="font-weight: 600;">0%</span>
+                </div>
+                <span id="dash-budget-detail" class="text-muted"></span>
+                <div class="progress-bar"><div class="progress-fill" id="dash-budget-bar" style="width: 0%;"></div></div>
+            </div>
+
+            <div class="stat-grid">
+                <div class="stat-card" onclick="App.navigate('agenda'); Agenda.switchTab('tareas', document.querySelectorAll('#agenda-view .tab')[1]);">
+                    <div class="num" id="dash-tasks-num">0/0</div>
+                    <div class="lbl">Tareas listas</div>
+                </div>
+                <div class="stat-card" onclick="App.navigate('invitados')">
+                    <div class="num" id="dash-guests-num">0</div>
+                    <div class="lbl" id="dash-guests-lbl">Invitados confirmados</div>
                 </div>
             </div>
 
             <div class="card">
-                <div class="flex justify-between items-center" style="margin-bottom: 15px;">
-                    <span class="font-title" style="font-size: 20px;">Presupuesto</span>
-                    <span id="dash-budget-pct" class="text-muted" style="font-weight: 600;">0%</span>
-                </div>
-                <div class="progress-bar"><div class="progress-fill" id="dash-budget-bar" style="width: 0%;"></div></div>
-            </div>
-
-            <div class="card flex justify-between items-center" onclick="App.navigate('agenda')" style="cursor:pointer;">
-                <div>
-                    <span class="font-title" style="font-size: 20px; display: block; margin-bottom: 6px;">Tareas Listas</span>
-                    <span id="dash-tasks-count" class="text-muted">0 / 0 completadas</span>
-                </div>
-                <div style="background: var(--theme-light); color: var(--theme-primary); padding: 14px; border-radius: 50%; font-weight: bold; font-size: 18px;">✓</div>
+                <span class="font-title" style="font-size: 20px; display:block; margin-bottom: 8px;">Lo que viene</span>
+                <div id="dash-upcoming"></div>
             </div>
 
             <div class="card text-center" style="background: var(--theme-secondary); color: var(--color-text-main); margin-top: 30px;">
-                <p style="font-style: italic; font-size: 16px; line-height: 1.8; font-family: 'Playfair Display', serif;">"El amor se compone de una sola alma que habita en dos cuerpos."</p>
+                <p id="dash-quote" style="font-style: italic; font-size: 16px; line-height: 1.8; font-family: 'Playfair Display', serif;">"El amor se compone de una sola alma que habita en dos cuerpos."</p>
             </div>
         </div>
     </div>
@@ -355,6 +409,7 @@
                     <p id="budget-status-amount" style="font-size: 18px; font-weight: 600;"></p>
                 </div>
             </div>
+            <p class="text-muted" style="margin-top: 10px;">Por pagar aún: <span id="budget-por-pagar" style="font-weight:600; color:var(--color-text-main);"></span></p>
         </div>
         
         <div class="scrollable" style="padding-top: 5px;">
@@ -395,7 +450,7 @@
                 </div>
                 <div class="calendar-grid" id="calendar-grid"></div>
             </div>
-            <h4 class="font-title" style="margin-bottom: 20px; font-size: 20px;">Próximos Eventos</h4>
+            <h4 class="font-title" id="events-title" style="margin-bottom: 20px; font-size: 20px;">Próximos Eventos</h4>
             <div id="events-list"></div>
             <button class="fab" onclick="Agenda.openModal()">+</button>
         </div>
@@ -429,6 +484,14 @@
                 <div class="text-center"><div id="guest-count-total" style="font-weight:600; font-size:28px;">0</div><div class="text-muted" style="margin-top:8px;">Total</div></div>
                 <div class="text-center"><div id="guest-count-conf" style="font-weight:600; font-size:28px; color:var(--theme-primary);">0</div><div class="text-muted" style="margin-top:8px;">Confirmados</div></div>
                 <div class="text-center"><div id="guest-count-pend" style="font-weight:600; font-size:28px; color:var(--theme-accent);">0</div><div class="text-muted" style="margin-top:8px;">Pendientes</div></div>
+            </div>
+            <p id="guest-breakdown" class="text-muted text-center" style="margin: -12px 0 18px;"></p>
+            <input type="search" id="guest-search" class="search-box" placeholder="🔍 Buscar invitado..." oninput="Guests.renderList()">
+            <div class="chips" id="guest-filters">
+                <button class="chip active" data-f="Todos" onclick="Guests.setFilter('Todos')">Todos</button>
+                <button class="chip" data-f="Confirmado" onclick="Guests.setFilter('Confirmado')">Confirmados</button>
+                <button class="chip" data-f="Pendiente" onclick="Guests.setFilter('Pendiente')">Pendientes</button>
+                <button class="chip" data-f="No asiste" onclick="Guests.setFilter('No asiste')">No asisten</button>
             </div>
             <div id="guests-container"></div>
             <button class="fab" onclick="Guests.openModal()">+</button>
@@ -497,7 +560,7 @@
                 <button onclick="MoreMenu.back()" style="margin-right: 15px; font-size: 26px; color: var(--theme-primary);">❮</button>
                 <h2 class="font-title" style="font-size: 28px;">Inspiración</h2>
             </div>
-            <input type="file" id="mood-upload" accept="image/*" class="hidden" onchange="Inspiration.upload(event)">
+            <input type="file" id="mood-upload" accept="image/*" multiple class="hidden" onchange="Inspiration.upload(event)">
             <div id="mood-grid" class="masonry-grid"></div>
             <button class="fab" onclick="document.getElementById('mood-upload').click()">+</button>
         </div>
@@ -590,12 +653,18 @@
                 <option value="Musica">Música</option>
                 <option value="VestidoTraje">Vestido y Traje</option>
                 <option value="Decoracion">Decoración y Flores</option>
+                <option value="Anillos">Anillos</option>
+                <option value="Invitaciones">Invitaciones y Detalles</option>
+                <option value="Belleza">Belleza (maquillaje, peinado)</option>
+                <option value="Transporte">Transporte</option>
+                <option value="Torta">Torta y Postres</option>
+                <option value="LunaMiel">Luna de Miel</option>
                 <option value="Otros">Otros</option>
             </select>
             <input type="text" id="gasto-prov" placeholder="Proveedor / Detalle">
-            <input type="number" id="gasto-est" placeholder="Costo Estimado">
-            <input type="number" id="gasto-real" placeholder="Costo Real (Opcional)">
-            <input type="number" id="gasto-pagado" placeholder="Ya pagado (Opcional)">
+            <input type="number" inputmode="numeric" id="gasto-est" placeholder="Costo Estimado">
+            <input type="number" inputmode="numeric" id="gasto-real" placeholder="Costo Real (Opcional)">
+            <input type="number" inputmode="numeric" id="gasto-pagado" placeholder="Ya pagado (Opcional)">
             
             <div class="flex justify-between items-center" style="margin-bottom: 20px;">
                 <label style="font-size: 14px; color: var(--color-text-muted); font-weight: 500;">Límite de pago</label>
@@ -617,7 +686,7 @@
     <!-- Modal Evento Agenda -->
     <div id="modal-evento" class="modal-overlay">
         <div class="modal-content">
-            <h3 class="font-title" style="margin-bottom: 25px; font-size: 24px; color: var(--theme-primary);">Añadir Evento</h3>
+            <h3 class="font-title modal-title">Añadir Evento</h3>
             <input type="text" id="ev-titulo" placeholder="Ej. Prueba de vestido">
             <input type="date" id="ev-fecha">
             <input type="time" id="ev-hora">
@@ -674,7 +743,8 @@
     <!-- Modal Invitado -->
     <div id="modal-guest" class="modal-overlay">
         <div class="modal-content">
-            <h3 class="font-title" style="margin-bottom: 25px; font-size: 24px; color: var(--theme-primary);">Añadir Invitado</h3>
+            <h3 id="guest-modal-title" class="font-title modal-title">Añadir Invitado</h3>
+            <input type="hidden" id="guest-edit-id">
             <input type="text" id="guest-name" placeholder="Nombre completo">
             <select id="guest-group">
                 <option value="Familia Novia">Familia Novia</option>
@@ -691,7 +761,7 @@
                 <option value="Confirmado">Estado: Confirmado</option>
                 <option value="No asiste">Estado: No asiste</option>
             </select>
-            <input type="tel" id="guest-phone" placeholder="Teléfono WhatsApp (Opcional)">
+            <input type="tel" id="guest-phone" placeholder="WhatsApp con indicativo (Ej. 573001234567)">
             <div class="flex" style="gap: 15px; margin-top: 10px;">
                 <button class="btn-outline" onclick="Guests.closeModal()">Cancelar</button>
                 <button class="btn-primary" onclick="Guests.save()">Guardar</button>
@@ -704,7 +774,7 @@
         <div class="modal-content">
             <h3 class="font-title" style="margin-bottom: 25px; font-size: 24px; color: var(--theme-primary);">Crear Mesa</h3>
             <input type="text" id="table-name" placeholder="Nombre/Número (Ej. Mesa 1)">
-            <input type="number" id="table-cap" placeholder="Capacidad (Ej. 8)">
+            <input type="number" inputmode="numeric" id="table-cap" placeholder="Capacidad (Ej. 8)">
             <div class="flex" style="gap: 15px; margin-top: 15px;">
                 <button class="btn-outline" onclick="Guests.closeTableModal()">Cancelar</button>
                 <button class="btn-primary" onclick="Guests.saveTable()">Guardar</button>
@@ -719,6 +789,7 @@
             <input type="text" id="vendor-name" placeholder="Nombre / Empresa">
             <input type="text" id="vendor-cat" placeholder="Categoría (Ej. Fotografía)">
             <input type="tel" id="vendor-phone" placeholder="Teléfono / WhatsApp">
+            <input type="text" id="vendor-notes" placeholder="Notas (precio, contacto, link...)">
             <div class="flex" style="gap: 15px; margin-top: 15px;">
                 <button class="btn-outline" onclick="Vendors.closeModal()">Cancelar</button>
                 <button class="btn-primary" onclick="Vendors.save()">Guardar</button>
@@ -747,7 +818,7 @@
     <script>
         // Store
         const Store = {
-            get(key) { return JSON.parse(localStorage.getItem('nb_' + key)) || null; },
+            get(key) { try { return JSON.parse(localStorage.getItem('nb_' + key)) ?? null; } catch (e) { return null; } },
             set(key, value) { localStorage.setItem('nb_' + key, JSON.stringify(value)); },
             init() {
                 if(!this.get('budget')) this.set('budget', []);
@@ -765,7 +836,15 @@
                     { id: 3, desc: 'Reservar lugar (Ceremonia y Recepción)', done: false },
                     { id: 4, desc: 'Contratar Fotógrafo/Video', done: false },
                     { id: 5, desc: 'Elegir vestido/traje', done: false },
-                    { id: 6, desc: 'Enviar invitaciones', done: false }
+                    { id: 6, desc: 'Contratar catering y elegir menú', done: false },
+                    { id: 7, desc: 'Contratar música / DJ', done: false },
+                    { id: 8, desc: 'Elegir padrinos y testigos', done: false },
+                    { id: 9, desc: 'Comprar los anillos', done: false },
+                    { id: 10, desc: 'Enviar invitaciones', done: false },
+                    { id: 11, desc: 'Trámites (notaría / iglesia)', done: false },
+                    { id: 12, desc: 'Prueba de maquillaje y peinado', done: false },
+                    { id: 13, desc: 'Confirmar asistencia y armar mesas', done: false },
+                    { id: 14, desc: 'Armar el minuto a minuto del día', done: false }
                 ];
                 this.set('tasks', defaultTasks);
             },
@@ -820,17 +899,73 @@
         const Utils = {
             formatMoney(amount) {
                 const conf = Store.get('config');
-                const currency = conf ? conf.currency : 'COP';
-                return new Intl.NumberFormat('es-ES', { style: 'currency', currency: currency, maximumFractionDigits: 0 }).format(amount);
+                const currency = conf && conf.currency ? conf.currency : 'COP';
+                const locale = { COP: 'es-CO', EUR: 'es-ES', USD: 'en-US' }[currency] || 'es-CO';
+                return new Intl.NumberFormat(locale, { style: 'currency', currency, maximumFractionDigits: 0 }).format(amount || 0);
             },
-            generateId() { return Date.now().toString(36) + Math.random().toString(36).substr(2); }
+            generateId() { return Date.now().toString(36) + Math.random().toString(36).substr(2); },
+            // Evita que nombres con comillas o símbolos rompan la pantalla
+            esc(str) {
+                return String(str ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+            },
+            // "2026-12-05" -> fecha local (sin el desfase de un día por zona horaria)
+            parseDate(str) {
+                if (!str) return null;
+                const [y, m, d] = str.split('-').map(Number);
+                return new Date(y, m - 1, d);
+            },
+            todayStr() {
+                const t = new Date();
+                return `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`;
+            },
+            daysUntil(str) {
+                const d = this.parseDate(str); if (!d) return null;
+                const t = this.parseDate(this.todayStr());
+                return Math.round((d - t) / 86400000);
+            },
+            fmtDate(str, opts = { day: 'numeric', month: 'short', year: 'numeric' }) {
+                const d = this.parseDate(str);
+                return d ? d.toLocaleDateString('es-ES', opts) : '';
+            },
+            // Teléfono para WhatsApp: solo dígitos; un celular colombiano de 10 dígitos recibe el 57
+            waPhone(phone) {
+                let p = String(phone || '').replace(/\D/g, '');
+                if (p.length === 10 && p.startsWith('3')) p = '57' + p;
+                return p;
+            },
+            empty(icon, text) { return `<div class="empty-state"><span class="big">${icon}</span>${text}</div>`; }
         };
+
+        const CATEGORY_LABELS = {
+            Lugar: 'Lugar', Comida: 'Comida y Bebida', FotoVideo: 'Fotografía y Video', Musica: 'Música',
+            VestidoTraje: 'Vestido y Traje', Decoracion: 'Decoración y Flores', Anillos: 'Anillos',
+            Invitaciones: 'Invitaciones y Detalles', Belleza: 'Belleza', Transporte: 'Transporte',
+            Torta: 'Torta y Postres', LunaMiel: 'Luna de Miel', Otros: 'Otros'
+        };
+
+        const QUOTES = [
+            '"El amor se compone de una sola alma que habita en dos cuerpos."',
+            '"Donde hay amor, hay vida."',
+            '"Juntos es nuestro lugar favorito."',
+            '"Amar no es mirarse el uno al otro, es mirar juntos en la misma dirección."',
+            '"Y de repente, todo tuvo sentido."'
+        ];
 
         // App Core
         const App = {
             init() {
                 Store.init();
                 Settings.init();
+                // Cerrar modales tocando fuera
+                document.querySelectorAll('.modal-overlay').forEach(m => {
+                    m.addEventListener('click', e => { if (e.target === m) m.classList.remove('active'); });
+                });
+                // Botón "Atrás" de Android (Capacitor): cierra modal / subpantalla antes de salir
+                document.addEventListener('backbutton', e => { e.preventDefault(); App.handleBack(); }, false);
+                if (window.Capacitor && Capacitor.Plugins && Capacitor.Plugins.App) {
+                    Capacitor.Plugins.App.addListener('backButton', () => App.handleBack());
+                }
+
                 const config = Store.get('config');
                 if (!config) {
                     document.getElementById('wizard-view').classList.remove('hidden');
@@ -839,14 +974,27 @@
                     this.navigate('inicio');
                 }
             },
+            handleBack() {
+                const modal = document.querySelector('.modal-overlay.active');
+                if (modal) return modal.classList.remove('active');
+                const sub = document.querySelector('.sub-screen:not(.hidden)');
+                if (sub) return MoreMenu.back();
+                if (!document.getElementById('inicio-view').classList.contains('hidden')) {
+                    if (window.Capacitor && Capacitor.Plugins && Capacitor.Plugins.App) Capacitor.Plugins.App.exitApp();
+                    return;
+                }
+                if (Store.get('config')) this.navigate('inicio');
+            },
+            openModal(id) { document.getElementById(id).classList.add('active'); },
+            closeModal(id) { document.getElementById(id).classList.remove('active'); },
             navigate(screenId) {
                 document.querySelectorAll('.view-container').forEach(el => el.classList.add('hidden'));
                 document.querySelectorAll('.sub-screen').forEach(el => el.classList.add('hidden'));
-                document.getElementById('mas-screen').classList.remove('hidden'); 
-                
+                document.getElementById('mas-screen').classList.remove('hidden');
+
                 const view = document.getElementById(`${screenId}-view`);
-                if(view) view.classList.remove('hidden');
-                
+                if (view) view.classList.remove('hidden');
+
                 const nav = document.querySelector('.bottom-nav');
                 if (screenId === 'wizard') {
                     nav.classList.add('hidden');
@@ -854,7 +1002,7 @@
                     nav.classList.remove('hidden');
                     document.querySelectorAll('.bottom-nav button').forEach(btn => btn.classList.remove('active'));
                     const autoBtn = document.querySelector(`.bottom-nav button[onclick*="${screenId}"]`);
-                    if(autoBtn) autoBtn.classList.add('active');
+                    if (autoBtn) autoBtn.classList.add('active');
                 }
 
                 if (screenId === 'inicio') Dashboard.render();
@@ -866,7 +1014,8 @@
                 const toast = document.getElementById('toast');
                 toast.textContent = msg;
                 toast.classList.add('show');
-                setTimeout(() => toast.classList.remove('show'), 2500);
+                clearTimeout(this._toastT);
+                this._toastT = setTimeout(() => toast.classList.remove('show'), 2500);
             },
             fireConfetti() {
                 const rootStyles = getComputedStyle(document.body);
@@ -876,7 +1025,6 @@
                     rootStyles.getPropertyValue('--theme-secondary').trim(),
                     '#FFFFFF'
                 ];
-
                 for (let i = 0; i < 40; i++) {
                     let conf = document.createElement('div');
                     conf.className = 'confetti';
@@ -893,28 +1041,26 @@
         // Wizard
         const Wizard = {
             next(step) {
+                if (step === 2 && !document.getElementById('wiz-name1').value.trim()) {
+                    App.showToast('Escribe al menos un nombre 💕');
+                }
                 document.querySelectorAll('.wizard-step').forEach(el => el.classList.add('hidden'));
                 document.getElementById(`step-${step}`).classList.remove('hidden');
             },
             finish() {
-                const n1 = document.getElementById('wiz-name1').value || 'M';
-                const n2 = document.getElementById('wiz-name2').value || 'J';
-                const city = document.getElementById('wiz-city').value;
+                const n1 = document.getElementById('wiz-name1').value.trim() || 'M';
+                const n2 = document.getElementById('wiz-name2').value.trim() || 'J';
+                const city = document.getElementById('wiz-city').value.trim();
                 const date = document.getElementById('wiz-date').value;
                 const curr = document.getElementById('wiz-currency').value;
                 const budg = parseInt(document.getElementById('wiz-budget').value) || 0;
-                
                 const guests = document.getElementById('wiz-guests').value;
                 const wStyle = document.getElementById('wiz-wedding-type').value || 'Boda';
                 const appTheme = document.getElementById('wiz-style').value || 'theme-romantico';
-                
-                Store.set('config', { 
-                    name1: n1, name2: n2, city, date, currency: curr, 
-                    budget: budg, guests, weddingStyle: wStyle 
-                });
-                
+
+                Store.set('config', { name1: n1, name2: n2, city, date, currency: curr, budget: budg, guests, weddingStyle: wStyle });
                 Settings.changeTheme(appTheme);
-                
+                document.getElementById('theme-selector').value = appTheme;
                 App.fireConfetti();
                 App.navigate('inicio');
             }
@@ -924,35 +1070,67 @@
         const Dashboard = {
             render() {
                 const conf = Store.get('config');
-                if(!conf) return;
-                
+                if (!conf) return;
+
                 document.getElementById('dash-names').textContent = `${conf.name1} & ${conf.name2}`;
-                
-                if(conf.date) {
-                    const target = new Date(conf.date).getTime();
-                    const now = new Date().getTime();
-                    const diff = target - now;
-                    if(diff > 0) {
-                        const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
-                        document.getElementById('dash-countdown').textContent = `${days} Días`;
-                        const opts = { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' };
-                        
-                        const displayStyle = conf.weddingStyle && conf.weddingStyle !== 'Boda' ? ` • Boda ${conf.weddingStyle}` : '';
-                        document.getElementById('dash-date').textContent = new Date(conf.date).toLocaleDateString('es-ES', opts) + displayStyle;
+                const lbl = document.getElementById('dash-faltan-lbl');
+                const cd = document.getElementById('dash-countdown');
+                const sub = document.getElementById('dash-countdown-sub');
+                const dateEl = document.getElementById('dash-date');
+
+                if (conf.date) {
+                    const days = Utils.daysUntil(conf.date);
+                    const style = conf.weddingStyle && conf.weddingStyle !== 'Boda' ? ` • Boda ${conf.weddingStyle}` : '';
+                    const city = conf.city ? ` • ${conf.city}` : '';
+                    dateEl.textContent = Utils.fmtDate(conf.date, { year: 'numeric', month: 'long', day: 'numeric' }) + city + style;
+                    sub.textContent = '';
+                    if (days > 0) {
+                        lbl.textContent = 'Faltan';
+                        cd.textContent = days === 1 ? '¡1 Día!' : `${days} Días`;
+                        if (days > 14) sub.textContent = `≈ ${Math.floor(days / 7)} semanas` + (days > 60 ? ` · ${Math.floor(days / 30)} meses` : '');
+                    } else if (days === 0) {
+                        lbl.textContent = 'Hoy';
+                        cd.textContent = '¡Es hoy! 💍';
                     } else {
-                        document.getElementById('dash-countdown').textContent = "¡Es hoy!";
+                        lbl.textContent = 'Casados hace';
+                        cd.textContent = `${-days} ${days === -1 ? 'Día' : 'Días'} 💕`;
                     }
+                } else {
+                    lbl.textContent = 'Fecha';
+                    cd.textContent = 'Por definir';
+                    dateEl.textContent = conf.city || 'Toca ✏️ para elegir la fecha';
+                    sub.textContent = '';
                 }
 
+                // Presupuesto: lo que sale de su bolsillo vs. presupuesto
                 const budgetList = Store.get('budget');
-                const totalEstimado = budgetList.reduce((sum, item) => sum + parseInt(item.est || 0), 0);
-                let pctBudget = conf.budget > 0 ? Math.min(100, Math.round((totalEstimado / conf.budget) * 100)) : 0;
-                document.getElementById('dash-budget-pct').textContent = `${pctBudget}%`;
-                document.getElementById('dash-budget-bar').style.width = `${pctBudget}%`;
+                const propio = budgetList.filter(i => !i.apadrinado).reduce((s, i) => s + ((i.real > 0 ? i.real : i.est) || 0), 0);
+                const pct = conf.budget > 0 ? Math.round((propio / conf.budget) * 100) : 0;
+                document.getElementById('dash-budget-pct').textContent = `${pct}%`;
+                document.getElementById('dash-budget-pct').style.color = pct > 100 ? 'var(--color-danger)' : '';
+                document.getElementById('dash-budget-bar').style.width = `${Math.min(100, pct)}%`;
+                document.getElementById('dash-budget-detail').textContent = conf.budget > 0
+                    ? `${Utils.formatMoney(propio)} de ${Utils.formatMoney(conf.budget)}`
+                    : 'Define un presupuesto con ✏️';
 
                 const tasks = Store.get('tasks');
-                const done = tasks.filter(t => t.done).length;
-                document.getElementById('dash-tasks-count').textContent = `${done} / ${tasks.length} completadas`;
+                document.getElementById('dash-tasks-num').textContent = `${tasks.filter(t => t.done).length}/${tasks.length}`;
+
+                const guests = Store.get('guests');
+                const conf2 = guests.filter(g => g.estado === 'Confirmado').length;
+                document.getElementById('dash-guests-num').textContent = guests.length ? `${conf2}/${guests.length}` : (conf.guests || 0);
+                document.getElementById('dash-guests-lbl').textContent = guests.length ? 'Invitados confirmados' : 'Invitados estimados';
+
+                // Próximos eventos y pagos
+                const today = Utils.todayStr();
+                const up = Store.get('events').filter(e => e.fecha >= today).sort((a, b) => (a.fecha + (a.hora || '')).localeCompare(b.fecha + (b.hora || ''))).slice(0, 3);
+                document.getElementById('dash-upcoming').innerHTML = up.length ? up.map(e => {
+                    const d = Utils.daysUntil(e.fecha);
+                    const when = d === 0 ? 'Hoy' : d === 1 ? 'Mañana' : Utils.fmtDate(e.fecha, { day: 'numeric', month: 'short' });
+                    return `<div class="mini-row"><span>${e.type === 'pago' ? '💳' : '📌'} ${Utils.esc(e.titulo)}</span><span class="text-muted">${when}${e.hora ? ' · ' + e.hora : ''}</span></div>`;
+                }).join('') : '<p class="text-muted" style="padding: 8px 0;">Nada pendiente en la agenda. ¡A disfrutar! ✨</p>';
+
+                document.getElementById('dash-quote').textContent = QUOTES[new Date().getDate() % QUOTES.length];
             }
         };
 
@@ -965,199 +1143,174 @@
                 document.getElementById('budget-lista').classList.add('hidden');
                 document.getElementById('budget-graficos').classList.add('hidden');
                 document.getElementById(`budget-${tabId}`).classList.remove('hidden');
-                if(tabId === 'graficos') this.renderChart();
+                if (tabId === 'graficos') this.renderChart();
             },
             openModal(id = null) {
-                const modalTitle = document.getElementById('gasto-modal-title');
-                if (id) {
-                    modalTitle.textContent = "Editar Gasto";
-                    const list = Store.get('budget');
-                    const item = list.find(i => i.id === id);
-                    if (item) {
-                        document.getElementById('gasto-edit-id').value = item.id;
-                        document.getElementById('gasto-cat').value = item.cat;
-                        document.getElementById('gasto-prov').value = item.prov;
-                        document.getElementById('gasto-est').value = item.est || '';
-                        document.getElementById('gasto-real').value = item.real || '';
-                        document.getElementById('gasto-pagado').value = item.pagado || '';
-                        document.getElementById('gasto-fecha').value = item.fecha || '';
-                        document.getElementById('gasto-apadrinado').checked = item.apadrinado || false;
-                    }
-                } else {
-                    modalTitle.textContent = "Añadir Gasto";
-                    document.getElementById('gasto-edit-id').value = '';
-                    document.getElementById('gasto-prov').value = '';
-                    document.getElementById('gasto-est').value = '';
-                    document.getElementById('gasto-real').value = '';
-                    document.getElementById('gasto-pagado').value = '';
-                    document.getElementById('gasto-fecha').value = '';
-                    document.getElementById('gasto-apadrinado').checked = false;
-                }
-                document.getElementById('modal-gasto').classList.add('active');
+                const f = k => document.getElementById('gasto-' + k);
+                const item = id ? Store.get('budget').find(i => i.id === id) : null;
+                document.getElementById('gasto-modal-title').textContent = item ? 'Editar Gasto' : 'Añadir Gasto';
+                f('edit-id').value = item ? item.id : '';
+                f('cat').value = item ? item.cat : 'Lugar';
+                f('prov').value = item ? item.prov : '';
+                f('est').value = item && item.est ? item.est : '';
+                f('real').value = item && item.real ? item.real : '';
+                f('pagado').value = item && item.pagado ? item.pagado : '';
+                f('fecha').value = item ? (item.fecha || '') : '';
+                f('apadrinado').checked = item ? !!item.apadrinado : false;
+                App.openModal('modal-gasto');
             },
-            closeModal() { 
-                document.getElementById('modal-gasto').classList.remove('active'); 
-            },
+            closeModal() { App.closeModal('modal-gasto'); },
             save() {
-                const prov = document.getElementById('gasto-prov').value;
-                if(!prov) return App.showToast("Ingresa un detalle");
-                
+                const prov = document.getElementById('gasto-prov').value.trim();
+                if (!prov) return App.showToast('Ingresa un detalle');
+
                 const editId = document.getElementById('gasto-edit-id').value;
-                const cat = document.getElementById('gasto-cat').value;
-                const est = parseInt(document.getElementById('gasto-est').value) || 0;
-                const real = parseInt(document.getElementById('gasto-real').value) || 0;
-                const pagado = parseInt(document.getElementById('gasto-pagado').value) || 0;
-                const fecha = document.getElementById('gasto-fecha').value;
-                const apadrinado = document.getElementById('gasto-apadrinado').checked;
+                const id = editId || Utils.generateId();
+                const item = {
+                    id, prov,
+                    cat: document.getElementById('gasto-cat').value,
+                    est: parseInt(document.getElementById('gasto-est').value) || 0,
+                    real: parseInt(document.getElementById('gasto-real').value) || 0,
+                    pagado: parseInt(document.getElementById('gasto-pagado').value) || 0,
+                    fecha: document.getElementById('gasto-fecha').value,
+                    apadrinado: document.getElementById('gasto-apadrinado').checked
+                };
 
                 const list = Store.get('budget');
-
-                if (editId) {
-                    const index = list.findIndex(i => i.id === editId);
-                    if (index !== -1) {
-                        list[index] = { id: editId, cat, prov, est, real, pagado, fecha, apadrinado };
-                    }
-                } else {
-                    list.push({ id: Utils.generateId(), cat, prov, est, real, pagado, fecha, apadrinado });
-                }
-
+                const index = list.findIndex(i => i.id === id);
+                if (index !== -1) list[index] = item; else list.push(item);
                 Store.set('budget', list);
-
-                if(fecha) {
-                    const events = Store.get('events');
-                    events.push({ id: Utils.generateId(), titulo: `Pago: ${prov}`, fecha, type: 'pago' });
-                    Store.set('events', events);
-                }
+                this.syncPaymentEvent(item);
 
                 this.closeModal();
                 this.render();
-                App.showToast(editId ? "Gasto actualizado" : "Gasto guardado");
+                App.showToast(editId ? 'Gasto actualizado' : 'Gasto guardado');
+            },
+            // Un solo recordatorio de pago por gasto (antes se duplicaba en cada edición)
+            syncPaymentEvent(item) {
+                let events = Store.get('events').filter(e => e.gastoId !== item.id);
+                const total = item.real || item.est;
+                if (item.fecha && !(total > 0 && item.pagado >= total)) {
+                    events.push({ id: Utils.generateId(), titulo: `Pago: ${item.prov}`, fecha: item.fecha, type: 'pago', gastoId: item.id });
+                }
+                Store.set('events', events);
             },
             delete(id, event) {
                 if (event) event.stopPropagation();
-                let list = Store.get('budget');
-                list = list.filter(i => i.id !== id);
-                Store.set('budget', list);
+                if (!confirm('¿Eliminar este gasto?')) return;
+                Store.set('budget', Store.get('budget').filter(i => i.id !== id));
+                Store.set('events', Store.get('events').filter(e => e.gastoId !== id));
                 this.render();
-                App.showToast("Gasto eliminado");
+                App.showToast('Gasto eliminado');
             },
             render() {
                 const list = Store.get('budget');
                 const conf = Store.get('config');
                 const budgetLimit = conf ? conf.budget : 0;
                 const container = document.getElementById('categories-container');
-                container.innerHTML = '';
+                const expanded = [...container.querySelectorAll('.category-item.expanded')].map(e => e.dataset.cat);
 
-                let totalBoda = 0; 
-                let totalApadrinado = 0; 
-                let totalRealTuBolsillo = 0; 
-
-                const grouped = list.reduce((acc, curr) => {
-                    const valorUso = curr.real > 0 ? curr.real : curr.est;
-                    totalBoda += valorUso;
-                    
-                    if (curr.apadrinado) totalApadrinado += valorUso;
-                    else totalRealTuBolsillo += valorUso;
-
-                    if(!acc[curr.cat]) acc[curr.cat] = { est: 0, real: 0, items: [] };
-                    acc[curr.cat].est += curr.est;
-                    acc[curr.cat].real += curr.real;
-                    acc[curr.cat].items.push(curr);
-                    return acc;
-                }, {});
+                let totalBoda = 0, totalApadrinado = 0, totalPropio = 0, porPagar = 0;
+                const grouped = {};
+                list.forEach(curr => {
+                    const valor = curr.real > 0 ? curr.real : curr.est;
+                    totalBoda += valor;
+                    if (curr.apadrinado) totalApadrinado += valor;
+                    else { totalPropio += valor; porPagar += Math.max(0, valor - (curr.pagado || 0)); }
+                    if (!grouped[curr.cat]) grouped[curr.cat] = { total: 0, items: [] };
+                    grouped[curr.cat].total += valor;
+                    grouped[curr.cat].items.push(curr);
+                });
 
                 document.getElementById('budget-total-boda').textContent = Utils.formatMoney(totalBoda);
                 document.getElementById('budget-total-apadrinado').textContent = Utils.formatMoney(totalApadrinado);
-                document.getElementById('budget-total-real').textContent = Utils.formatMoney(totalRealTuBolsillo);
-                
-                const diff = budgetLimit - totalRealTuBolsillo;
+                document.getElementById('budget-total-real').textContent = Utils.formatMoney(totalPropio);
+                document.getElementById('budget-por-pagar').textContent = Utils.formatMoney(porPagar);
+
+                const diff = budgetLimit - totalPropio;
                 const lbl = document.getElementById('budget-status-label');
                 const amt = document.getElementById('budget-status-amount');
-                if(diff >= 0) {
-                    lbl.textContent = "Te sobran"; amt.style.color = "var(--theme-primary)";
-                } else {
-                    lbl.textContent = "Te pasaste por"; amt.style.color = "var(--color-danger)";
-                }
+                if (diff >= 0) { lbl.textContent = 'Te sobran'; amt.style.color = 'var(--theme-primary)'; }
+                else { lbl.textContent = 'Te pasaste por'; amt.style.color = 'var(--color-danger)'; }
                 amt.textContent = Utils.formatMoney(Math.abs(diff));
 
-                for (const cat in grouped) {
+                if (!list.length) {
+                    container.innerHTML = Utils.empty('💸', 'Aún no hay gastos.<br>Toca <b>+</b> para añadir el primero.');
+                    return;
+                }
+
+                container.innerHTML = Object.keys(grouped).map(cat => {
                     const c = grouped[cat];
-                    const catValor = c.real > 0 ? c.real : c.est;
-                    const div = document.createElement('div');
-                    div.className = 'category-item';
-                    
-                    let itemsHtml = c.items.map(i => {
-                        const statusClass = i.pagado >= (i.real || i.est) ? 'status-pagado' : (i.pagado > 0 ? 'status-abonado' : 'status-pendiente');
+                    const itemsHtml = c.items.map(i => {
+                        const total = i.real || i.est;
+                        const statusClass = total > 0 && i.pagado >= total ? 'status-pagado' : (i.pagado > 0 ? 'status-abonado' : 'status-pendiente');
                         const apaBadge = i.apadrinado ? '<span class="badge-apadrinado">Apadrinado 🎁</span>' : '';
+                        const d = i.fecha ? Utils.daysUntil(i.fecha) : null;
+                        const vence = i.fecha ? `Vence: ${Utils.fmtDate(i.fecha)}${statusClass !== 'status-pagado' && d < 0 ? ' ⚠️' : ''}` : '';
                         return `
-                        <div class="expense-row" onclick="Budget.openModal('${i.id}')" style="cursor: pointer;" title="Toca para editar">
-                            <div>
-                                <div style="display:flex; align-items:center;">
+                        <div class="expense-row" onclick="Budget.openModal('${i.id}')" style="cursor: pointer;">
+                            <div style="min-width:0;">
+                                <div style="display:flex; align-items:center; flex-wrap:wrap;">
                                     <span class="status-dot ${statusClass}"></span>
-                                    <strong style="font-weight: 500;">${i.prov}</strong> ${apaBadge}
+                                    <strong style="font-weight: 500;">${Utils.esc(i.prov)}</strong> ${apaBadge}
                                 </div>
-                                <span class="text-muted" style="font-size:12px; margin-left:22px;">${i.fecha ? 'Vence: '+i.fecha : ''}</span>
+                                <span class="text-muted" style="font-size:12px; margin-left:22px;">${vence}</span>
                             </div>
-                            <div class="text-right" style="display:flex; align-items:center;">
+                            <div style="display:flex; align-items:center; text-align:right;">
                                 <div>
-                                    <div style="font-weight:600;">${Utils.formatMoney(i.real || i.est)}</div>
+                                    <div style="font-weight:600;">${Utils.formatMoney(total)}</div>
                                     <div class="text-muted" style="font-size:11px;">Pagado: ${Utils.formatMoney(i.pagado)}</div>
                                 </div>
                                 <button class="delete-btn" onclick="Budget.delete('${i.id}', event)">×</button>
                             </div>
                         </div>`;
                     }).join('');
-
-                    div.innerHTML = `
+                    return `
+                    <div class="category-item ${expanded.includes(cat) ? 'expanded' : ''}" data-cat="${cat}">
                         <div class="cat-head" onclick="this.parentElement.classList.toggle('expanded')">
-                            <span>${cat}</span>
-                            <span style="font-weight:600; color: var(--theme-primary);">${Utils.formatMoney(catValor)} <span style="font-size:12px; margin-left:5px;">▼</span></span>
+                            <span>${CATEGORY_LABELS[cat] || Utils.esc(cat)} <span class="text-muted" style="font-size:12px;">(${c.items.length})</span></span>
+                            <span style="font-weight:600; color: var(--theme-primary);">${Utils.formatMoney(c.total)} <span style="font-size:12px; margin-left:5px;">▼</span></span>
                         </div>
                         <div class="cat-body">${itemsHtml}</div>
-                    `;
-                    container.appendChild(div);
-                }
+                    </div>`;
+                }).join('') + `<p class="text-muted text-center" style="margin-top:10px; font-size:12px;">● Pendiente &nbsp; ● Abonado &nbsp; ● Pagado · Toca un gasto para editarlo</p>`;
             },
             renderChart() {
+                if (typeof Chart === 'undefined') return;
                 const list = Store.get('budget');
                 const ctx = document.getElementById('budgetChart');
-                
                 const dataGroup = list.reduce((acc, curr) => {
-                    if(!curr.apadrinado) {
-                        acc[curr.cat] = (acc[curr.cat] || 0) + (curr.real > 0 ? curr.real : curr.est);
+                    if (!curr.apadrinado) {
+                        const k = CATEGORY_LABELS[curr.cat] || curr.cat;
+                        acc[k] = (acc[k] || 0) + (curr.real > 0 ? curr.real : curr.est);
                     }
                     return acc;
                 }, {});
 
                 const rs = getComputedStyle(document.body);
-                const colors = [
-                    rs.getPropertyValue('--theme-primary').trim(),
-                    rs.getPropertyValue('--theme-accent').trim(),
-                    rs.getPropertyValue('--theme-secondary').trim(),
-                    rs.getPropertyValue('--theme-light').trim(),
-                    rs.getPropertyValue('--color-danger').trim(),
-                    rs.getPropertyValue('--color-text-muted').trim()
-                ];
+                const colors = ['--theme-primary', '--theme-accent', '--color-danger', '--color-text-muted', '--theme-secondary', '--theme-light']
+                    .map(v => rs.getPropertyValue(v).trim())
+                    .concat(['#B5838D', '#6D9DC5', '#E5989B', '#81B29A', '#F2CC8F', '#9A8C98', '#D4A373']);
 
-                if(this.chartInstance) this.chartInstance.destroy();
+                if (this.chartInstance) this.chartInstance.destroy();
                 this.chartInstance = new Chart(ctx, {
                     type: 'doughnut',
-                    data: {
-                        labels: Object.keys(dataGroup),
-                        datasets: [{
-                            data: Object.values(dataGroup),
-                            backgroundColor: colors,
-                            borderWidth: 0
-                        }]
-                    },
-                    options: { cutout: '75%', plugins: { legend: { position: 'bottom', labels: { font: { family: 'Montserrat' } } } } }
+                    data: { labels: Object.keys(dataGroup), datasets: [{ data: Object.values(dataGroup), backgroundColor: colors, borderWidth: 0 }] },
+                    options: {
+                        cutout: '70%',
+                        plugins: {
+                            legend: { position: 'bottom', labels: { color: rs.getPropertyValue('--color-text-main').trim(), font: { family: 'Montserrat' } } },
+                            tooltip: { callbacks: { label: c => ` ${c.label}: ${Utils.formatMoney(c.raw)}` } }
+                        }
+                    }
                 });
             }
         };
 
         // Agenda y Tareas
         const Agenda = {
-            currentDate: new Date(),
+            currentDate: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+            selectedDay: null,
             switchTab(tabId, el) {
                 document.querySelectorAll('#agenda-view .tab').forEach(t => t.classList.remove('active'));
                 el.classList.add('active');
@@ -1165,79 +1318,77 @@
                 document.getElementById('agenda-tareas').classList.add('hidden');
                 document.getElementById(`agenda-${tabId}`).classList.remove('hidden');
             },
-            openModal() { document.getElementById('modal-evento').classList.add('active'); },
-            closeModal() { document.getElementById('modal-evento').classList.remove('active'); },
-            openTaskModal(id = null) {
-                const title = document.getElementById('task-modal-title');
-                if(id) {
-                    title.textContent = "Editar Tarea";
-                    const tasks = Store.get('tasks');
-                    const task = tasks.find(t => t.id === id);
-                    if(task) {
-                        document.getElementById('task-edit-id').value = task.id;
-                        document.getElementById('task-desc').value = task.desc;
-                    }
-                } else {
-                    title.textContent = "Añadir Tarea";
-                    document.getElementById('task-edit-id').value = '';
-                    document.getElementById('task-desc').value = '';
-                }
-                document.getElementById('modal-tarea').classList.add('active');
+            openModal() {
+                document.getElementById('ev-titulo').value = '';
+                document.getElementById('ev-fecha').value = this.selectedDay || '';
+                document.getElementById('ev-hora').value = '';
+                App.openModal('modal-evento');
             },
-            closeTaskModal() { document.getElementById('modal-tarea').classList.remove('active'); },
+            closeModal() { App.closeModal('modal-evento'); },
+            openTaskModal(id = null) {
+                const task = id ? Store.get('tasks').find(t => t.id == id) : null;
+                document.getElementById('task-modal-title').textContent = task ? 'Editar Tarea' : 'Añadir Tarea';
+                document.getElementById('task-edit-id').value = task ? task.id : '';
+                document.getElementById('task-desc').value = task ? task.desc : '';
+                App.openModal('modal-tarea');
+            },
+            closeTaskModal() { App.closeModal('modal-tarea'); },
             changeMonth(dir) {
-                this.currentDate.setMonth(this.currentDate.getMonth() + dir);
+                this.currentDate = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth() + dir, 1);
+                this.selectedDay = null;
+                this.renderCalendar();
+            },
+            selectDay(dateStr) {
+                this.selectedDay = this.selectedDay === dateStr ? null : dateStr;
                 this.renderCalendar();
             },
             save() {
-                const titulo = document.getElementById('ev-titulo').value;
+                const titulo = document.getElementById('ev-titulo').value.trim();
                 const fecha = document.getElementById('ev-fecha').value;
-                if(!titulo || !fecha) return;
-                
+                if (!titulo || !fecha) return App.showToast('Falta el título o la fecha');
                 const events = Store.get('events');
-                events.push({ id: Utils.generateId(), titulo, fecha, type: 'cita' });
+                events.push({ id: Utils.generateId(), titulo, fecha, hora: document.getElementById('ev-hora').value, type: 'cita' });
                 Store.set('events', events);
                 this.closeModal();
                 this.render();
-                App.showToast("Evento guardado");
+                App.showToast('Evento guardado');
             },
             saveTask() {
-                const desc = document.getElementById('task-desc').value;
-                if(!desc) return App.showToast("Ingresa la descripción");
+                const desc = document.getElementById('task-desc').value.trim();
+                if (!desc) return App.showToast('Ingresa la descripción');
                 const editId = document.getElementById('task-edit-id').value;
-                let tasks = Store.get('tasks');
-
-                if(editId) {
-                    let task = tasks.find(t => t.id == editId);
-                    if(task) task.desc = desc;
+                const tasks = Store.get('tasks');
+                if (editId) {
+                    const task = tasks.find(t => t.id == editId);
+                    if (task) task.desc = desc;
                 } else {
                     tasks.push({ id: Utils.generateId(), desc, done: false });
                 }
                 Store.set('tasks', tasks);
                 this.closeTaskModal();
                 this.renderTasks();
-                App.showToast(editId ? "Tarea actualizada" : "Tarea añadida");
+                App.showToast(editId ? 'Tarea actualizada' : 'Tarea añadida');
             },
             delete(id) {
-                let list = Store.get('events');
-                Store.set('events', list.filter(i => i.id !== id));
+                const ev = Store.get('events').find(e => e.id === id);
+                if (ev && ev.type === 'pago' && !confirm('Este recordatorio viene de un gasto. ¿Quitarlo de la agenda?')) return;
+                Store.set('events', Store.get('events').filter(i => i.id !== id));
                 this.render();
-                App.showToast("Evento eliminado");
+                App.showToast('Evento eliminado');
             },
             deleteTask(id, event) {
-                if(event) event.stopPropagation();
-                let tasks = Store.get('tasks');
-                Store.set('tasks', tasks.filter(t => t.id != id));
+                if (event) event.stopPropagation();
+                Store.set('tasks', Store.get('tasks').filter(t => t.id != id));
                 this.renderTasks();
-                App.showToast("Tarea eliminada");
+                App.showToast('Tarea eliminada');
             },
             toggleTask(id) {
-                let tasks = Store.get('tasks');
-                let task = tasks.find(t => t.id == id);
-                if(task) {
+                const tasks = Store.get('tasks');
+                const task = tasks.find(t => t.id == id);
+                if (task) {
                     task.done = !task.done;
                     Store.set('tasks', tasks);
-                    if(task.done) App.fireConfetti();
+                    if (task.done) App.fireConfetti();
                     this.renderTasks();
                 }
             },
@@ -1245,176 +1396,285 @@
                 this.renderCalendar();
                 this.renderTasks();
             },
+            eventCard(e, today) {
+                const past = e.fecha < today;
+                return `
+                    <div class="card flex justify-between items-center" style="padding:20px; margin-bottom: 12px; ${past ? 'opacity:.55;' : ''}">
+                        <div style="min-width:0;">
+                            <strong style="font-weight: 600; font-size: 15px;">${Utils.esc(e.titulo)}</strong>
+                            <div class="text-muted" style="margin-top: 8px;">
+                                <span class="event-tag ${e.type === 'pago' ? 'pago' : ''}">${e.type === 'pago' ? 'Pago' : 'Cita'}</span>
+                                ${Utils.fmtDate(e.fecha, { weekday: 'short', day: 'numeric', month: 'short' })}${e.hora ? ' · ' + e.hora : ''}
+                            </div>
+                        </div>
+                        <button class="delete-btn" onclick="Agenda.delete('${e.id}')">×</button>
+                    </div>`;
+            },
             renderCalendar() {
                 const grid = document.getElementById('calendar-grid');
-                const title = document.getElementById('calendar-month-year');
                 const list = document.getElementById('events-list');
                 const events = Store.get('events') || [];
-                
+                const conf = Store.get('config') || {};
+                const today = Utils.todayStr();
+
                 const year = this.currentDate.getFullYear();
                 const month = this.currentDate.getMonth();
-                title.textContent = this.currentDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
-                
-                grid.innerHTML = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'].map(d => `<div class="calendar-day-header">${d}</div>`).join('');
-                
+                document.getElementById('calendar-month-year').textContent = this.currentDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+
+                let html = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'].map(d => `<div class="calendar-day-header">${d}</div>`).join('');
                 let firstDay = new Date(year, month, 1).getDay();
                 firstDay = firstDay === 0 ? 7 : firstDay;
                 const daysInMonth = new Date(year, month + 1, 0).getDate();
-                
-                for(let i = 1; i < firstDay; i++) grid.innerHTML += `<div></div>`;
-                
-                for(let i = 1; i <= daysInMonth; i++) {
-                    const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
-                    const hasEvent = events.some(e => e.fecha === dateStr);
-                    grid.innerHTML += `<div class="calendar-day ${hasEvent ? 'has-event' : ''}">${i}</div>`;
+                for (let i = 1; i < firstDay; i++) html += `<div></div>`;
+                for (let i = 1; i <= daysInMonth; i++) {
+                    const ds = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+                    const cls = [
+                        events.some(e => e.fecha === ds) ? 'has-event' : '',
+                        ds === today ? 'today' : '',
+                        ds === conf.date ? 'wedding' : '',
+                        ds === this.selectedDay ? 'selected' : ''
+                    ].join(' ');
+                    html += `<div class="calendar-day ${cls}" onclick="Agenda.selectDay('${ds}')">${i}</div>`;
                 }
+                grid.innerHTML = html;
 
-                const futureEvents = events.filter(e => new Date(e.fecha) >= new Date(new Date().setHours(0,0,0,0))).sort((a,b) => new Date(a.fecha) - new Date(b.fecha));
-                list.innerHTML = futureEvents.map(e => `
-                    <div class="card flex justify-between items-center" style="padding:20px; margin-bottom: 12px;">
-                        <div>
-                            <strong style="font-weight: 600; font-size: 15px;">${e.titulo}</strong>
-                            <div class="text-muted" style="margin-top: 6px;">${new Date(e.fecha).toLocaleDateString('es-ES', {timeZone:'UTC'})}</div>
-                        </div>
-                        <button class="delete-btn" onclick="Agenda.delete('${e.id}')">×</button>
-                    </div>
-                `).join('');
+                const sortFn = (a, b) => (a.fecha + (a.hora || '')).localeCompare(b.fecha + (b.hora || ''));
+                const title = document.getElementById('events-title');
+                if (this.selectedDay) {
+                    title.textContent = Utils.fmtDate(this.selectedDay, { weekday: 'long', day: 'numeric', month: 'long' });
+                    const dayEvents = events.filter(e => e.fecha === this.selectedDay).sort(sortFn);
+                    list.innerHTML = (this.selectedDay === conf.date ? `<div class="card text-center" style="background:var(--theme-secondary);">💍 ¡El gran día!</div>` : '')
+                        + (dayEvents.length ? dayEvents.map(e => this.eventCard(e, today)).join('') : Utils.empty('🗓️', 'Nada este día. Toca <b>+</b> para agendar algo.'));
+                } else {
+                    title.textContent = 'Próximos Eventos';
+                    const futureEvents = events.filter(e => e.fecha >= today).sort(sortFn);
+                    list.innerHTML = futureEvents.length ? futureEvents.map(e => this.eventCard(e, today)).join('')
+                        : Utils.empty('🗓️', 'No hay eventos próximos.<br>Toca un día del calendario o <b>+</b> para agendar.');
+                }
             },
             renderTasks() {
                 const list = document.getElementById('tasks-list');
                 const tasks = Store.get('tasks');
                 const done = tasks.filter(t => t.done).length;
                 const pct = tasks.length > 0 ? Math.round((done / tasks.length) * 100) : 0;
-                
                 document.getElementById('tasks-pct').textContent = `${pct}%`;
                 document.getElementById('tasks-bar').style.width = `${pct}%`;
-                
-                list.innerHTML = tasks.map(t => `
+
+                // Pendientes primero, completadas al final
+                const sorted = [...tasks.filter(t => !t.done), ...tasks.filter(t => t.done)];
+                list.innerHTML = sorted.length ? sorted.map(t => `
                     <div class="task-item ${t.done ? 'completed' : ''}">
                         <div class="task-checkbox" onclick="Agenda.toggleTask('${t.id}')"></div>
-                        <span style="font-weight: 500; flex: 1; cursor: pointer;" onclick="Agenda.openTaskModal('${t.id}')">${t.desc}</span>
+                        <span style="font-weight: 500; flex: 1; cursor: pointer;" onclick="Agenda.openTaskModal('${t.id}')">${Utils.esc(t.desc)}</span>
                         <button class="delete-btn" onclick="Agenda.deleteTask('${t.id}', event)">×</button>
                     </div>
-                `).join('');
+                `).join('') : Utils.empty('📝', 'Sin tareas. Toca <b>+</b> para añadir.');
             }
         };
 
         // Invitados y Mesas
         const Guests = {
+            filter: 'Todos',
+            sortables: [],
             switchTab(tabId, el) {
                 document.querySelectorAll('#invitados-view .tab').forEach(t => t.classList.remove('active'));
                 el.classList.add('active');
                 document.getElementById('guests-lista').classList.add('hidden');
                 document.getElementById('guests-mesas').classList.add('hidden');
                 document.getElementById(`guests-${tabId}`).classList.remove('hidden');
-                if(tabId === 'mesas') this.initSortable();
+                if (tabId === 'mesas') this.renderMesas();
             },
-            openModal() { document.getElementById('modal-guest').classList.add('active'); },
-            closeModal() { document.getElementById('modal-guest').classList.remove('active'); },
-            openTableModal() { document.getElementById('modal-table').classList.add('active'); },
-            closeTableModal() { document.getElementById('modal-table').classList.remove('active'); },
+            openModal(id = null) {
+                const g = id ? Store.get('guests').find(x => x.id === id) : null;
+                document.getElementById('guest-modal-title').textContent = g ? 'Editar Invitado' : 'Añadir Invitado';
+                document.getElementById('guest-edit-id').value = g ? g.id : '';
+                document.getElementById('guest-name').value = g ? g.nombre : '';
+                document.getElementById('guest-group').value = g ? g.grupo : 'Familia Novia';
+                document.getElementById('guest-child').checked = g ? !!g.esNino : false;
+                document.getElementById('guest-status').value = g ? g.estado : 'Pendiente';
+                document.getElementById('guest-phone').value = g ? (g.telefono || '') : '';
+                App.openModal('modal-guest');
+            },
+            closeModal() { App.closeModal('modal-guest'); },
+            openTableModal() {
+                document.getElementById('table-name').value = `Mesa ${Store.get('tables').length + 1}`;
+                document.getElementById('table-cap').value = '';
+                App.openModal('modal-table');
+            },
+            closeTableModal() { App.closeModal('modal-table'); },
             save() {
-                const nombre = document.getElementById('guest-name').value;
-                if(!nombre) return App.showToast("Ingresa un nombre");
+                const nombre = document.getElementById('guest-name').value.trim();
+                if (!nombre) return App.showToast('Ingresa un nombre');
+                const editId = document.getElementById('guest-edit-id').value;
                 const list = Store.get('guests');
-                list.push({
-                    id: Utils.generateId(), nombre,
+                const data = {
+                    nombre,
                     grupo: document.getElementById('guest-group').value,
                     esNino: document.getElementById('guest-child').checked,
                     estado: document.getElementById('guest-status').value,
-                    telefono: document.getElementById('guest-phone').value,
-                    mesaId: null
-                });
+                    telefono: document.getElementById('guest-phone').value.trim()
+                };
+                if (editId) {
+                    const g = list.find(x => x.id === editId);
+                    if (g) Object.assign(g, data);
+                    if (g && data.estado === 'No asiste') g.mesaId = null;
+                } else {
+                    list.push({ id: Utils.generateId(), ...data, mesaId: null });
+                }
                 Store.set('guests', list);
                 this.closeModal(); this.render();
-                App.showToast("Invitado guardado");
+                App.showToast(editId ? 'Invitado actualizado' : 'Invitado guardado');
+            },
+            cycleStatus(id, event) {
+                if (event) event.stopPropagation();
+                const order = ['Pendiente', 'Confirmado', 'No asiste'];
+                const list = Store.get('guests');
+                const g = list.find(x => x.id === id);
+                if (!g) return;
+                g.estado = order[(order.indexOf(g.estado) + 1) % order.length];
+                if (g.estado === 'No asiste') g.mesaId = null;
+                Store.set('guests', list);
+                this.render();
+            },
+            setFilter(f) {
+                this.filter = f;
+                document.querySelectorAll('#guest-filters .chip').forEach(c => c.classList.toggle('active', c.dataset.f === f));
+                this.renderList();
             },
             saveTable() {
-                const name = document.getElementById('table-name').value;
+                const name = document.getElementById('table-name').value.trim();
                 const cap = parseInt(document.getElementById('table-cap').value) || 8;
-                if(!name) return App.showToast("Dale un nombre a la mesa");
+                if (!name) return App.showToast('Dale un nombre a la mesa');
                 const tables = Store.get('tables');
                 tables.push({ id: Utils.generateId(), name, cap });
                 Store.set('tables', tables);
                 this.closeTableModal(); this.renderMesas();
-                App.showToast("Mesa creada");
+                App.showToast('Mesa creada');
             },
-            delete(id) {
-                let list = Store.get('guests');
-                Store.set('guests', list.filter(i => i.id !== id));
+            deleteTable(id) {
+                if (!confirm('¿Eliminar esta mesa? Sus invitados quedarán sin asignar.')) return;
+                Store.set('tables', Store.get('tables').filter(t => t.id !== id));
+                const guests = Store.get('guests');
+                guests.forEach(g => { if (g.mesaId === id) g.mesaId = null; });
+                Store.set('guests', guests);
+                this.renderMesas();
+                App.showToast('Mesa eliminada');
+            },
+            delete(id, event) {
+                if (event) event.stopPropagation();
+                const g = Store.get('guests').find(x => x.id === id);
+                if (!g || !confirm(`¿Eliminar a ${g.nombre}?`)) return;
+                Store.set('guests', Store.get('guests').filter(i => i.id !== id));
                 this.render();
-                App.showToast("Invitado eliminado");
+                App.showToast('Invitado eliminado');
             },
-            sendWA(phone, name) {
-                if(!phone) return App.showToast("No hay teléfono guardado");
-                const conf = Store.get('config');
-                const msg = encodeURIComponent(`¡Hola ${name}! Queremos invitarte a nuestra boda (${conf.name1} y ${conf.name2}). Por favor confirma tu asistencia.`);
-                window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
+            openWA(phone, text) {
+                const p = Utils.waPhone(phone);
+                if (!p) return App.showToast('No hay teléfono guardado');
+                window.open(`https://wa.me/${p}?text=${encodeURIComponent(text)}`, '_blank');
+            },
+            sendWA(id, event) {
+                if (event) event.stopPropagation();
+                const g = Store.get('guests').find(x => x.id === id);
+                if (!g) return;
+                const conf = Store.get('config') || {};
+                const cuando = conf.date ? ` el ${Utils.fmtDate(conf.date, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}` : '';
+                const donde = conf.city ? ` en ${conf.city}` : '';
+                this.openWA(g.telefono, `¡Hola ${g.nombre}! 💍 ${conf.name1} y ${conf.name2} queremos invitarte a nuestra boda${cuando}${donde}. ¿Nos confirmas tu asistencia? ¡Nos encantaría verte allí!`);
             },
             render() {
                 const list = Store.get('guests');
+                const asisten = list.filter(g => g.estado !== 'No asiste');
                 document.getElementById('guest-count-total').textContent = list.length;
                 document.getElementById('guest-count-conf').textContent = list.filter(g => g.estado === 'Confirmado').length;
                 document.getElementById('guest-count-pend').textContent = list.filter(g => g.estado === 'Pendiente').length;
-
-                document.getElementById('guests-container').innerHTML = list.map(g => `
-                    <div class="guest-card">
-                        <div>
-                            <div style="font-weight:600; font-size: 16px;">${g.nombre} ${g.esNino ? '🎈' : ''}</div>
-                            <div class="text-muted" style="margin-top: 6px;">${g.grupo} • ${g.estado}</div>
-                        </div>
-                        <div class="flex items-center">
-                            <button class="btn-icon" onclick="Guests.sendWA('${g.telefono}', '${g.nombre}')"><svg width="20" viewBox="0 0 24 24"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2m0 16.5c-1.45 0-2.88-.38-4.12-1.12l-.3-.17-3.08.8.83-3-.2-.33c-.79-1.25-1.21-2.71-1.21-4.25 0-4.58 3.75-8.33 8.33-8.33s8.33 3.75 8.33 8.33-3.75 8.33-8.33 8.33m4.54-5.92c-.25-.12-1.46-.71-1.67-.79-.21-.08-.38-.12-.54.12s-.62.79-.75.96c-.12.17-.29.21-.54.08-.25-.12-1.04-.38-1.98-1.23-.73-.65-1.23-1.46-1.38-1.71-.12-.25-.01-.38.12-.5.12-.12.25-.29.38-.46.12-.17.17-.29.25-.5.08-.21.04-.38-.04-.5-.08-.12-.54-1.29-.75-1.79-.21-.46-.42-.42-.54-.42H8.46c-.21 0-.54.08-.83.42-.29.33-1.08 1.04-1.08 2.54s1.12 2.96 1.29 3.17c.17.21 2.17 3.33 5.25 4.67 2.12.92 2.83.96 3.83.83 1.08-.12 3.42-1.38 3.92-2.71.5-1.33.5-2.46.33-2.71-.12-.25-.46-.38-.71-.5z"/></svg></button>
-                            <button class="delete-btn" onclick="Guests.delete('${g.id}')">×</button>
-                        </div>
-                    </div>
-                `).join('');
+                const ninos = asisten.filter(g => g.esNino).length;
+                const noAsisten = list.length - asisten.length;
+                document.getElementById('guest-breakdown').textContent = list.length
+                    ? `${asisten.length - ninos} adultos · ${ninos} niños${noAsisten ? ` · ${noAsisten} no asisten` : ''}` : '';
+                this.renderList();
                 this.renderMesas();
             },
-            renderMesas() {
-                const guests = Store.get('guests');
+            renderList() {
+                const q = document.getElementById('guest-search').value.trim().toLowerCase();
                 const tables = Store.get('tables');
-                
-                const unassigned = guests.filter(g => !g.mesaId);
-                document.getElementById('unassigned-count').textContent = unassigned.length;
-                document.getElementById('guests-unassigned').innerHTML = unassigned.map(g => `<div class="guest-drag-item" data-id="${g.id}">${g.nombre}</div>`).join('');
-                
-                document.getElementById('tables-container').innerHTML = tables.map(t => {
-                    const tGuests = guests.filter(g => g.mesaId === t.id);
+                const all = Store.get('guests');
+                const list = all
+                    .filter(g => this.filter === 'Todos' || g.estado === this.filter)
+                    .filter(g => !q || g.nombre.toLowerCase().includes(q) || (g.grupo || '').toLowerCase().includes(q))
+                    .sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'));
+
+                const container = document.getElementById('guests-container');
+                if (!all.length) { container.innerHTML = Utils.empty('💌', 'Aún no hay invitados.<br>Toca <b>+</b> para añadir el primero.'); return; }
+                if (!list.length) { container.innerHTML = Utils.empty('🔍', 'Ningún invitado coincide.'); return; }
+
+                container.innerHTML = list.map(g => {
+                    const mesa = g.mesaId ? tables.find(t => t.id === g.mesaId) : null;
+                    const pillCls = g.estado === 'No asiste' ? 'pill-No' : 'pill-' + g.estado;
                     return `
-                    <div class="card">
-                        <div class="flex justify-between items-center" style="margin-bottom:20px;">
-                            <span class="font-title" style="font-size:20px; color: var(--theme-primary);">${t.name}</span>
-                            <span class="text-muted">${tGuests.length} / ${t.cap} sillas</span>
+                    <div class="guest-card" onclick="Guests.openModal('${g.id}')" style="cursor:pointer;">
+                        <div style="min-width:0;">
+                            <div style="font-weight:600; font-size: 16px;">${Utils.esc(g.nombre)} ${g.esNino ? '🎈' : ''}</div>
+                            <div class="text-muted" style="margin-top: 8px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                                <span class="pill ${pillCls}" onclick="Guests.cycleStatus('${g.id}', event)" title="Toca para cambiar estado">${g.estado}</span>
+                                ${Utils.esc(g.grupo)}${mesa ? ' · ' + Utils.esc(mesa.name) : ''}
+                            </div>
                         </div>
-                        <div class="table-dropzone" data-table-id="${t.id}" data-cap="${t.cap}">
-                            ${tGuests.map(g => `<div class="guest-drag-item" data-id="${g.id}">${g.nombre}</div>`).join('')}
+                        <div class="flex items-center">
+                            ${g.telefono ? `<button class="btn-icon" onclick="Guests.sendWA('${g.id}', event)" title="Invitar por WhatsApp"><svg width="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2m0 16.5c-1.45 0-2.88-.38-4.12-1.12l-.3-.17-3.08.8.83-3-.2-.33c-.79-1.25-1.21-2.71-1.21-4.25 0-4.58 3.75-8.33 8.33-8.33s8.33 3.75 8.33 8.33-3.75 8.33-8.33 8.33"/></svg></button>` : ''}
+                            <button class="delete-btn" onclick="Guests.delete('${g.id}', event)">×</button>
                         </div>
                     </div>`;
                 }).join('');
             },
+            renderMesas() {
+                const guests = Store.get('guests').filter(g => g.estado !== 'No asiste');
+                const tables = Store.get('tables');
+                const item = g => `<div class="guest-drag-item" data-id="${g.id}">${Utils.esc(g.nombre)}${g.esNino ? ' 🎈' : ''}${g.estado === 'Pendiente' ? ' <span class="text-muted" style="font-size:11px;">(pend.)</span>' : ''}</div>`;
+
+                const unassigned = guests.filter(g => !g.mesaId || !tables.some(t => t.id === g.mesaId));
+                document.getElementById('unassigned-count').textContent = unassigned.length;
+                document.getElementById('guests-unassigned').innerHTML = unassigned.map(item).join('');
+
+                document.getElementById('tables-container').innerHTML = tables.length ? tables.map(t => {
+                    const tGuests = guests.filter(g => g.mesaId === t.id);
+                    const full = tGuests.length >= t.cap;
+                    return `
+                    <div class="card">
+                        <div class="flex justify-between items-center" style="margin-bottom:20px;">
+                            <span class="font-title" style="font-size:20px; color: var(--theme-primary);">${Utils.esc(t.name)}</span>
+                            <span class="flex items-center">
+                                <span class="text-muted" style="${full ? 'color:var(--theme-accent); font-weight:600;' : ''}">${tGuests.length} / ${t.cap} sillas</span>
+                                <button class="delete-btn" onclick="Guests.deleteTable('${t.id}')">×</button>
+                            </span>
+                        </div>
+                        <div class="table-dropzone" data-table-id="${t.id}" data-cap="${t.cap}">${tGuests.map(item).join('')}</div>
+                    </div>`;
+                }).join('') : Utils.empty('🪑', 'Crea mesas y arrastra a los invitados hasta ellas<br>(mantén presionado un nombre para moverlo).');
+                this.initSortable();
+            },
             initSortable() {
-                if(typeof Sortable === 'undefined') return;
-                const zones = document.querySelectorAll('.table-dropzone');
-                zones.forEach(zone => {
-                    new Sortable(zone, {
-                        group: 'mesas', animation: 200, ghostClass: 'highlight', delay: 100, delayOnTouchOnly: true,
+                if (typeof Sortable === 'undefined') return;
+                // Destruir instancias anteriores para no duplicarlas
+                this.sortables.forEach(s => { try { s.destroy(); } catch (e) {} });
+                this.sortables = [];
+                document.querySelectorAll('.table-dropzone').forEach(zone => {
+                    this.sortables.push(new Sortable(zone, {
+                        group: 'mesas', animation: 200, ghostClass: 'highlight', delay: 150, delayOnTouchOnly: true,
                         onEnd: (evt) => {
                             const guestId = evt.item.dataset.id;
                             const toZone = evt.to;
                             const newTableId = toZone.dataset.tableId === 'none' ? null : toZone.dataset.tableId;
-                            
-                            if(newTableId && toZone.children.length > parseInt(toZone.dataset.cap)) {
-                                App.showToast("Mesa llena");
-                                evt.from.appendChild(evt.item);
-                                return;
+                            if (newTableId && evt.from !== evt.to && toZone.children.length > parseInt(toZone.dataset.cap)) {
+                                App.showToast('Mesa llena');
+                                return this.renderMesas();
                             }
-                            
-                            const guests = Store.get('guests');
-                            const g = guests.find(i => i.id === guestId);
-                            if(g) { g.mesaId = newTableId; Store.set('guests', guests); this.renderMesas(); this.initSortable(); }
+                            const all = Store.get('guests');
+                            const g = all.find(i => i.id === guestId);
+                            if (g) { g.mesaId = newTableId; Store.set('guests', all); }
+                            this.renderMesas();
                         }
-                    });
+                    }));
                 });
             }
         };
@@ -1435,92 +1695,143 @@
         };
 
         const Vendors = {
-            openModal() { document.getElementById('modal-vendor').classList.add('active'); },
-            closeModal() { document.getElementById('modal-vendor').classList.remove('active'); },
+            openModal() {
+                ['name', 'cat', 'phone', 'notes'].forEach(k => document.getElementById('vendor-' + k).value = '');
+                App.openModal('modal-vendor');
+            },
+            closeModal() { App.closeModal('modal-vendor'); },
             save() {
-                const nombre = document.getElementById('vendor-name').value;
-                if(!nombre) return App.showToast("Ingresa un nombre");
+                const nombre = document.getElementById('vendor-name').value.trim();
+                if (!nombre) return App.showToast('Ingresa un nombre');
                 const list = Store.get('vendors') || [];
-                list.push({ id: Utils.generateId(), nombre, cat: document.getElementById('vendor-cat').value, phone: document.getElementById('vendor-phone').value });
+                list.push({
+                    id: Utils.generateId(), nombre,
+                    cat: document.getElementById('vendor-cat').value.trim(),
+                    phone: document.getElementById('vendor-phone').value.trim(),
+                    notes: document.getElementById('vendor-notes').value.trim()
+                });
                 Store.set('vendors', list);
                 this.closeModal(); this.render();
-                App.showToast("Proveedor guardado");
+                App.showToast('Proveedor guardado');
             },
             delete(id) {
+                if (!confirm('¿Eliminar este proveedor?')) return;
                 Store.set('vendors', Store.get('vendors').filter(v => v.id !== id));
                 this.render();
-                App.showToast("Proveedor eliminado");
+                App.showToast('Proveedor eliminado');
+            },
+            contact(id) {
+                const v = Store.get('vendors').find(x => x.id === id);
+                if (v) Guests.openWA(v.phone, `¡Hola! Les escribo por nuestra boda y quisiera más información sobre sus servicios.`);
             },
             render() {
-                document.getElementById('vendors-list').innerHTML = (Store.get('vendors') || []).map(v => `
+                const list = Store.get('vendors') || [];
+                document.getElementById('vendors-list').innerHTML = list.length ? list.map(v => `
                     <div class="card flex justify-between items-center">
-                        <div>
-                            <div style="font-weight:600; font-size: 16px;">${v.nombre}</div>
-                            <div class="text-muted" style="margin-top: 6px;">${v.cat}</div>
+                        <div style="min-width:0;">
+                            <div style="font-weight:600; font-size: 16px;">${Utils.esc(v.nombre)}</div>
+                            <div class="text-muted" style="margin-top: 6px;">${Utils.esc(v.cat) || 'Sin categoría'}${v.phone ? ' · ' + Utils.esc(v.phone) : ''}</div>
+                            ${v.notes ? `<div class="text-muted" style="margin-top: 6px; font-size:12px;">📝 ${Utils.esc(v.notes)}</div>` : ''}
                         </div>
                         <div class="flex items-center">
-                            ${v.phone ? `<button class="btn-icon" onclick="Guests.sendWA('${v.phone}', 'Hola, los contacto sobre mi boda')"><svg width="20" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2m0 16.5c-1.45 0-2.88-.38-4.12-1.12l-.3-.17-3.08.8.83-3-.2-.33c-.79-1.25-1.21-2.71-1.21-4.25 0-4.58 3.75-8.33 8.33-8.33s8.33 3.75 8.33 8.33-3.75 8.33-8.33 8.33z"/></svg></button>` : ''}
+                            ${v.phone ? `<a class="btn-icon" href="tel:${Utils.esc(v.phone.replace(/[^\d+]/g, ''))}" style="text-decoration:none;">📞</a>
+                            <button class="btn-icon" onclick="Vendors.contact('${v.id}')"><svg width="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2m0 16.5c-1.45 0-2.88-.38-4.12-1.12l-.3-.17-3.08.8.83-3-.2-.33c-.79-1.25-1.21-2.71-1.21-4.25 0-4.58 3.75-8.33 8.33-8.33s8.33 3.75 8.33 8.33-3.75 8.33-8.33 8.33"/></svg></button>` : ''}
                             <button class="delete-btn" onclick="Vendors.delete('${v.id}')">×</button>
                         </div>
                     </div>
-                `).join('');
+                `).join('') : Utils.empty('📋', 'Guarda aquí los contactos de fotógrafos, catering, música...');
             }
         };
 
         const Inspiration = {
-            async upload(event) {
-                const file = event.target.files[0];
-                if(!file) return;
-                const reader = new FileReader();
-                reader.onload = async (e) => {
-                    await ImageStore.save(Utils.generateId(), e.target.result);
-                    this.render();
-                    App.showToast("Imagen guardada");
-                };
-                reader.readAsDataURL(file);
+            // Reduce las fotos (máx. 1200 px) para que la app no se vuelva pesada
+            compress(dataUrl) {
+                return new Promise(resolve => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const max = 1200, scale = Math.min(1, max / Math.max(img.width, img.height));
+                        const c = document.createElement('canvas');
+                        c.width = Math.round(img.width * scale); c.height = Math.round(img.height * scale);
+                        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+                        resolve(c.toDataURL('image/jpeg', 0.82));
+                    };
+                    img.onerror = () => resolve(dataUrl);
+                    img.src = dataUrl;
+                });
             },
-            async delete(id) { await ImageStore.delete(id); this.render(); },
+            async upload(event) {
+                const files = [...event.target.files];
+                if (!files.length) return;
+                App.showToast('Guardando...');
+                for (const file of files) {
+                    const dataUrl = await new Promise(r => { const fr = new FileReader(); fr.onload = e => r(e.target.result); fr.readAsDataURL(file); });
+                    await ImageStore.save(Utils.generateId(), await this.compress(dataUrl));
+                }
+                event.target.value = '';
+                this.render();
+                App.showToast(files.length > 1 ? `${files.length} imágenes guardadas` : 'Imagen guardada');
+            },
+            async delete(id) {
+                if (!confirm('¿Eliminar esta imagen?')) return;
+                await ImageStore.delete(id); this.render();
+            },
+            view(id) {
+                const img = document.querySelector(`.masonry-item[data-id="${id}"] img`);
+                if (!img) return;
+                const o = document.createElement('div');
+                o.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:400;display:flex;align-items:center;justify-content:center;padding:20px;';
+                o.innerHTML = `<img src="${img.src}" style="max-width:100%;max-height:100%;border-radius:16px;">`;
+                o.onclick = () => o.remove();
+                document.body.appendChild(o);
+            },
             async render() {
                 const images = await ImageStore.getAll();
-                document.getElementById('mood-grid').innerHTML = images.map(img => `
-                    <div class="masonry-item">
-                        <img src="${img.dataUrl}">
+                document.getElementById('mood-grid').innerHTML = images.length ? images.map(img => `
+                    <div class="masonry-item" data-id="${img.id}">
+                        <img src="${img.dataUrl}" loading="lazy" onclick="Inspiration.view('${img.id}')">
                         <button class="delete-img" onclick="Inspiration.delete('${img.id}')">✕</button>
                     </div>
-                `).join('');
+                `).join('') : `<div style="grid-column: 1 / -1;">${Utils.empty('✨', 'Sube fotos de vestidos, decoración, tortas... todo lo que les inspire.')}</div>`;
             }
         };
 
         const Timeline = {
-            openModal() { document.getElementById('modal-timeline').classList.add('active'); },
-            closeModal() { document.getElementById('modal-timeline').classList.remove('active'); },
+            openModal() {
+                ['tl-time', 'tl-act', 'tl-encargado'].forEach(k => document.getElementById(k).value = '');
+                App.openModal('modal-timeline');
+            },
+            closeModal() { App.closeModal('modal-timeline'); },
             save() {
                 const time = document.getElementById('tl-time').value;
-                const act = document.getElementById('tl-act').value;
-                if(!time || !act) return App.showToast("Faltan datos");
+                const act = document.getElementById('tl-act').value.trim();
+                if (!time || !act) return App.showToast('Faltan la hora o la actividad');
                 const list = Store.get('timeline') || [];
-                list.push({ id: Utils.generateId(), time, act, req: document.getElementById('tl-encargado').value });
+                list.push({ id: Utils.generateId(), time, act, req: document.getElementById('tl-encargado').value.trim() });
                 Store.set('timeline', list);
                 this.closeModal(); this.render();
-                App.showToast("Actividad guardada");
+                App.showToast('Actividad guardada');
             },
-            delete(id) { Store.set('timeline', Store.get('timeline').filter(t => t.id !== id)); this.render(); },
+            delete(id) {
+                if (!confirm('¿Eliminar esta actividad?')) return;
+                Store.set('timeline', Store.get('timeline').filter(t => t.id !== id)); this.render();
+            },
             render() {
-                let list = Store.get('timeline') || [];
-                list.sort((a,b) => a.time.localeCompare(b.time));
-                document.getElementById('timeline-list').innerHTML = list.map(t => `
+                const list = (Store.get('timeline') || []).sort((a, b) => a.time.localeCompare(b.time));
+                const el = document.getElementById('timeline-list');
+                el.style.borderLeftColor = list.length ? '' : 'transparent';
+                el.innerHTML = list.length ? list.map(t => `
                     <div style="position:relative; padding-bottom:25px;">
-                        <div style="position:absolute; left:-32px; top:12px; width:16px; height:16px; border-radius:50%; background:var(--theme-primary); box-shadow: 0 0 0 5px var(--theme-light);"></div>
+                        <div style="position:absolute; left:-34px; top:24px; width:16px; height:16px; border-radius:50%; background:var(--theme-primary); box-shadow: 0 0 0 5px var(--theme-light);"></div>
                         <div class="card" style="margin-bottom:0; display:flex; justify-content:space-between; align-items: center; padding: 20px;">
-                            <div>
-                                <strong class="font-title" style="color:var(--theme-primary); font-size: 20px; margin-right: 12px;">${t.time}</strong> 
-                                <span style="font-weight: 500; font-size: 16px;">${t.act}</span><br>
-                                <span class="text-muted" style="font-size:13px; margin-top:8px; display:inline-block;">${t.req}</span>
+                            <div style="min-width:0;">
+                                <strong class="font-title" style="color:var(--theme-primary); font-size: 20px; margin-right: 12px;">${t.time}</strong>
+                                <span style="font-weight: 500; font-size: 16px;">${Utils.esc(t.act)}</span>
+                                ${t.req ? `<br><span class="text-muted" style="font-size:13px; margin-top:8px; display:inline-block;">👤 ${Utils.esc(t.req)}</span>` : ''}
                             </div>
                             <button class="delete-btn" onclick="Timeline.delete('${t.id}')">×</button>
                         </div>
                     </div>
-                `).join('');
+                `).join('') : Utils.empty('⏱️', 'Arma el minuto a minuto del gran día:<br>ceremonia, fotos, primer baile, torta...');
             }
         };
 
@@ -1543,12 +1854,15 @@
             applyTheme(themeClass) {
                 document.body.classList.remove('theme-romantico', 'theme-campestre', 'theme-playa');
                 document.body.classList.add(themeClass);
+                const meta = document.querySelector('meta[name="theme-color"]');
+                if (meta) meta.content = getComputedStyle(document.body).getPropertyValue('--bg-app').trim();
             },
             toggleDark() {
                 const isDark = document.getElementById('toggle-dark').checked;
                 if(isDark) document.body.classList.add('dark-mode');
                 else document.body.classList.remove('dark-mode');
                 Store.set('dark_mode', isDark);
+                this.applyTheme(Store.get('app_theme') || 'theme-romantico');
             },
             openEditConfigModal() {
                 const conf = Store.get('config');
@@ -1578,6 +1892,7 @@
                 Store.set('config', conf);
                 this.closeEditConfigModal();
                 Dashboard.render();
+                if (!document.getElementById('presupuesto-view').classList.contains('hidden')) Budget.render();
                 App.showToast("Datos de la boda actualizados");
             },
             printPDF() {
@@ -1589,14 +1904,15 @@
                 const data = {
                     config: Store.get('config'), budget: Store.get('budget'), events: Store.get('events'),
                     tasks: Store.get('tasks'), guests: Store.get('guests'), tables: Store.get('tables'),
-                    vendors: Store.get('vendors'), timeline: Store.get('timeline'), app_theme: Store.get('app_theme'),
+                    vendors: Store.get('vendors'), timeline: Store.get('timeline'), app_theme: Store.get('app_theme'), dark_mode: Store.get('dark_mode'),
                     images: await ImageStore.getAll()
                 };
                 
                 const blob = new Blob([JSON.stringify(data)], { type: "application/json" });
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
-                a.href = url; a.download = `Respaldo_Boda.json`;
+                const c = Store.get('config') || {};
+                a.href = url; a.download = `Respaldo_Boda_${(c.name1 || '')}_${(c.name2 || '')}_${Utils.todayStr()}.json`.replace(/\s+/g, '');
                 document.body.appendChild(a); a.click(); document.body.removeChild(a);
                 URL.revokeObjectURL(url);
                 App.showToast("Respaldo descargado");
@@ -1608,8 +1924,8 @@
                 reader.onload = async (e) => {
                     try {
                         const data = JSON.parse(e.target.result);
-                        ['config','budget','events','tasks','guests','tables','vendors','timeline', 'app_theme'].forEach(key => {
-                            if(data[key]) Store.set(key, data[key]);
+                        ['config','budget','events','tasks','guests','tables','vendors','timeline', 'app_theme', 'dark_mode'].forEach(key => {
+                            if(data[key] !== undefined && data[key] !== null) Store.set(key, data[key]);
                         });
                         
                         if(data.images && Array.isArray(data.images)) {

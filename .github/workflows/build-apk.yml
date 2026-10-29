@@ -51,6 +51,13 @@ jobs:
           EOF
           npm install
 
+      - name: Incluir librerías dentro del APK (funciona sin internet)
+        run: |
+          npm install --no-save chart.js@4.4.4 sortablejs@1.15.3
+          mkdir -p www/lib
+          cp node_modules/chart.js/dist/chart.umd.js www/lib/chart.umd.js
+          cp node_modules/sortablejs/Sortable.min.js www/lib/Sortable.min.js
+
       - name: Crear Ícono de Boda (Anillos y Diamante Nativos)
         run: |
           mkdir -p assets
